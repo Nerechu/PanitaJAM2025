@@ -15,6 +15,8 @@ public class PlayerMovement : MonoBehaviour
     public float airMultiplier;
     public bool readyToJump;
 
+    
+
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
 
@@ -23,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
 
     public float playerHeight;
     public LayerMask whatIsGround;
-    bool grounded;
+    public bool grounded;
 
 
     public Transform orientation;
