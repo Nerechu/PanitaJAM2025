@@ -6,7 +6,9 @@ public class PlayerMovement : MonoBehaviour
 {
     // Start is called before the first frame update
     [Header("Movement")]
-    public float moveSpeed;
+    private float moveSpeed;
+    public float walkSpeed;
+    public float sprintSpeed;
 
     public float groundDrag;
 
@@ -15,10 +17,12 @@ public class PlayerMovement : MonoBehaviour
     public float airMultiplier;
     public bool readyToJump;
 
-    
+    public float wallrunSpeed;
+
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
+    public KeyCode sprintKey = KeyCode.LeftShift;
 
 
     [Header("Ground Check")]
@@ -26,7 +30,6 @@ public class PlayerMovement : MonoBehaviour
     public float playerHeight;
     public LayerMask whatIsGround;
     public bool grounded;
-
 
     public Transform orientation;
 
@@ -36,6 +39,19 @@ public class PlayerMovement : MonoBehaviour
     Vector4 moveDirection;
 
     Rigidbody rb;
+
+    public MovementState state;
+    public enum MovementState
+    {
+        walking,
+        sprinting,
+        air,
+        wallrunning,
+        restricted
+    }
+
+    public bool wallrunning;
+    public bool restricted;
 
     private void Start()
     {
@@ -48,6 +64,7 @@ public class PlayerMovement : MonoBehaviour
         grounded = Physics.Raycast(transform.position, Vector3.down, playerHeight*0.5f +.2f, whatIsGround);
         MyInput();
         SpeedControl();
+        StateHandler();
 
 
         if (grounded)
@@ -57,7 +74,39 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
-        MovePlayer();
+        if (state != MovementState.restricted)
+            MovePlayer();
+    }
+
+
+    private void StateHandler()
+    {
+        if (restricted)
+        {
+            state = MovementState.restricted;
+        }
+        else if (wallrunning)
+        {
+            state = MovementState.wallrunning;
+            moveSpeed = wallrunSpeed;
+        }
+        else if (grounded && Input.GetKey(sprintKey))
+        {
+            state = MovementState.sprinting;
+            moveSpeed = sprintSpeed;
+        }
+
+        else if (grounded)
+        {
+            state = MovementState.walking;
+            moveSpeed = walkSpeed;
+        }
+
+        else
+        {
+            state = MovementState.air;
+        }
+
     }
     private void MyInput()
     {
