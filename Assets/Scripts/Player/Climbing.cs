@@ -17,7 +17,7 @@ public class Climbing : MonoBehaviour
     public float wallRunSpeed;
     public float maxClimbTime;
     private float climbTimer;
-    
+
 
     private bool climbing;
 
@@ -44,7 +44,7 @@ public class Climbing : MonoBehaviour
         //State 1
         if (wallFront && Input.GetKey(KeyCode.W) && wallLookAngle < maxWallLookAngle)
         {
-            if (!climbing && climbTimer > 0)  StartClimbing();
+            if (!climbing && climbTimer > 0) StartClimbing();
 
             if (climbTimer > 0) climbTimer -= Time.deltaTime;
             if (climbTimer < 0) StopClimbing();
@@ -64,7 +64,7 @@ public class Climbing : MonoBehaviour
         wallFront = Physics.SphereCast(transform.position, sphereCastRadius, orientation.forward, out frontWallHit, detectionLength, whatIsWall);
         wallLookAngle = Vector3.Angle(orientation.forward, -frontWallHit.normal);
 
-        if(pm.grounded) climbTimer = maxClimbTime;
+        if (pm.grounded) climbTimer = maxClimbTime;
     }
 
     private void StartClimbing()
