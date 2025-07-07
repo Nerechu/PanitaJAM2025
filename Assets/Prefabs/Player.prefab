@@ -149,6 +149,11 @@ GameObject:
   - component: {fileID: 109347928661280257}
   - component: {fileID: 8607184640818338251}
   - component: {fileID: 6543733599928398236}
+  - component: {fileID: 9220193373816131233}
+  - component: {fileID: 3901682744546982294}
+  - component: {fileID: 7239729715171813497}
+  - component: {fileID: 7847085475773383785}
+  - component: {fileID: 17629212044391922}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -213,18 +218,251 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 03601bf08dfac1349becc4232c4d3a3f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  moveSpeed: 15
+  walkSpeed: 10
+  sprintSpeed: 20
   groundDrag: 5
   jumpForce: 23
   jumpCooldown: 0.25
   airMultiplier: 0.4
   readyToJump: 0
+  wallrunSpeed: 15
+  dashSpeed: 35
+  dashSpeedChangeFactor: 50
+  maxYSpeed: 0
+  climbSpeed: 10
+  vaultSpeed: 10
+  airMinSpeed: 5
+  swingSpeed: 20
   jumpKey: 32
+  sprintKey: 304
   playerHeight: 2
   whatIsGround:
     serializedVersion: 2
     m_Bits: 4294967295
+  grounded: 0
   orientation: {fileID: 3244622056276340787}
+  state: 0
+  wallrunning: 0
+  restricted: 0
+  dashing: 0
+  climbing: 0
+  swinging: 0
+--- !u!114 &9220193373816131233
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6820348819289455148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03fed1dabc198c94a90695fba752efcf, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  whatIsGround:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  wallRunForce: 5
+  wallRunJumpUpForce: 10
+  wallRunJumpSideForce: 15
+  maxWallRunTime: 1.5
+  wallClimbSpeed: 0
+  jumpKey: 32
+  upwardsRunKey: 304
+  downwardsRunKey: 306
+  doJumpOnEndOfTimer: 1
+  allowedWallJumps: 1
+  wallCheckDistance: 1
+  minJumpHeight: 1
+  exitWallTime: 0.2
+  useGravity: 0
+  orientation: {fileID: 3244622056276340787}
+  camT: {fileID: 5191170343738254070}
+--- !u!114 &3901682744546982294
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6820348819289455148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: edfcfc2d96d24fe49b4970bfd20cf1c9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 3244622056276340787}
+  rb: {fileID: 8607184640818338251}
+  whatIsWall:
+    serializedVersion: 2
+    m_Bits: 64
+  pm: {fileID: 6543733599928398236}
+  climbSpeed: 9
+  wallRunSpeed: 0
+  maxClimbTime: 2
+  detectionLength: 0.7
+  sphereCastRadius: 0.25
+  maxWallLookAngle: 30
+--- !u!114 &7239729715171813497
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6820348819289455148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe381a3f480d76499262d83fba07edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 3244622056276340787}
+  playerCam: {fileID: 0}
+  dashForce: 50
+  dashUpwardForce: 0
+  maxDashYSpeed: 0
+  dashDuration: 0.15
+  useCameraForward: 0
+  allowAllDirections: 1
+  disableGravity: 1
+  resetVel: 1
+  dashCd: 2
+  dashKey: 101
+--- !u!114 &7847085475773383785
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6820348819289455148}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d7a66750e24f8744a83f48b03317a471, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  lr: {fileID: 17629212044391922}
+  gunTip: {fileID: 109347928661280257}
+  cam: {fileID: 0}
+  player: {fileID: 109347928661280257}
+  whatIsGrappleable:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  pm: {fileID: 6543733599928398236}
+  maxSwingDistance: 50
+  spring: 20
+  damper: 2
+  massScale: 5
+  orientation: {fileID: 3244622056276340787}
+  rb: {fileID: 8607184640818338251}
+  horizontalThrustForce: 15
+  forwardThrustForce: 50
+  extendCableSpeed: 20
+  swingKey: 324
+--- !u!120 &17629212044391922
+LineRenderer:
+  serializedVersion: 2
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6820348819289455148}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_StaticShadowCaster: 0
+  m_MotionVectors: 0
+  m_LightProbeUsage: 0
+  m_ReflectionProbeUsage: 0
+  m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_ReceiveGI: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+  m_Positions:
+  - {x: 0, y: 0, z: 0}
+  - {x: 0, y: 0, z: 1}
+  m_Parameters:
+    serializedVersion: 3
+    widthMultiplier: 0.1
+    widthCurve:
+      serializedVersion: 2
+      m_Curve:
+      - serializedVersion: 3
+        time: 0.50470495
+        value: 0.47304183
+        inSlope: 0
+        outSlope: 0
+        tangentMode: 0
+        weightedMode: 0
+        inWeight: 0.33333334
+        outWeight: 0.33333334
+      m_PreInfinity: 2
+      m_PostInfinity: 2
+      m_RotationOrder: 4
+    colorGradient:
+      serializedVersion: 2
+      key0: {r: 0.10323405, g: 1, b: 0, a: 1}
+      key1: {r: 1, g: 1, b: 1, a: 1}
+      key2: {r: 0, g: 0, b: 0, a: 0}
+      key3: {r: 0, g: 0, b: 0, a: 0}
+      key4: {r: 0, g: 0, b: 0, a: 0}
+      key5: {r: 0, g: 0, b: 0, a: 0}
+      key6: {r: 0, g: 0, b: 0, a: 0}
+      key7: {r: 0, g: 0, b: 0, a: 0}
+      ctime0: 0
+      ctime1: 65535
+      ctime2: 0
+      ctime3: 0
+      ctime4: 0
+      ctime5: 0
+      ctime6: 0
+      ctime7: 0
+      atime0: 0
+      atime1: 65535
+      atime2: 0
+      atime3: 0
+      atime4: 0
+      atime5: 0
+      atime6: 0
+      atime7: 0
+      m_Mode: 0
+      m_ColorSpace: 0
+      m_NumColorKeys: 2
+      m_NumAlphaKeys: 2
+    numCornerVertices: 0
+    numCapVertices: 0
+    alignment: 0
+    textureMode: 0
+    textureScale: {x: 1, y: 1}
+    shadowBias: 0.5
+    generateLightingData: 0
+  m_MaskInteraction: 0
+  m_UseWorldSpace: 1
+  m_Loop: 0
+  m_ApplyActiveColorSpace: 1
 --- !u!1 &8526807940879800007
 GameObject:
   m_ObjectHideFlags: 0
