@@ -23,6 +23,10 @@ public class PlayerMovement : MonoBehaviour
     public float dashSpeedChangeFactor;
     public float maxYSpeed;
 
+    public float climbSpeed;
+    public float vaultSpeed;
+    public float airMinSpeed;
+
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -40,7 +44,7 @@ public class PlayerMovement : MonoBehaviour
     float horizontalInput;
     float verticalInput;
 
-    Vector4 moveDirection;
+    Vector3 moveDirection;
 
     Rigidbody rb;
 
@@ -52,12 +56,14 @@ public class PlayerMovement : MonoBehaviour
         air,
         wallrunning,
         restricted,
-        dashing
+        dashing,
+        climbing
     }
 
     public bool wallrunning;
     public bool restricted;
     public bool dashing;
+    public bool climbing;
 
     private void Start()
     {

@@ -464,7 +464,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1496954538}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edfcfc2d96d24fe49b4970bfd20cf1c9, type: 3}
   m_Name: 
@@ -473,10 +473,10 @@ MonoBehaviour:
   rb: {fileID: 1496954542}
   whatIsWall:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 64
   pm: {fileID: 1496954541}
-  climbSpeed: 6
-  wallRunSpeed: 0.9
+  climbSpeed: 9
+  wallRunSpeed: 0
   maxClimbTime: 2
   detectionLength: 0.7
   sphereCastRadius: 0.25
@@ -519,7 +519,7 @@ MonoBehaviour:
   wallRunJumpUpForce: 10
   wallRunJumpSideForce: 15
   maxWallRunTime: 1.5
-  wallClimbSpeed: 5
+  wallClimbSpeed: 0
   jumpKey: 32
   upwardsRunKey: 304
   downwardsRunKey: 306
@@ -548,7 +548,7 @@ MonoBehaviour:
   dashForce: 50
   dashUpwardForce: 0
   maxDashYSpeed: 0
-  dashDuration: 0.3
+  dashDuration: 0.15
   useCameraForward: 0
   allowAllDirections: 1
   disableGravity: 1
@@ -1019,6 +1019,18 @@ PrefabInstance:
     - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: walkSpeed
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: climbSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: vaultSpeed
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: airMinSpeed
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: readyToJump
