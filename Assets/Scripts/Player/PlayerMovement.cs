@@ -19,6 +19,10 @@ public class PlayerMovement : MonoBehaviour
 
     public float wallrunSpeed;
 
+    public float dashSpeed;
+    public float dashSpeedChangeFactor;
+    public float maxYSpeed;
+
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -47,11 +51,13 @@ public class PlayerMovement : MonoBehaviour
         sprinting,
         air,
         wallrunning,
-        restricted
+        restricted,
+        dashing
     }
 
     public bool wallrunning;
     public bool restricted;
+    public bool dashing;
 
     private void Start()
     {
@@ -67,7 +73,7 @@ public class PlayerMovement : MonoBehaviour
         StateHandler();
 
 
-        if (grounded)
+        if (state == MovementState.walking || state == MovementState.sprinting)
             rb.drag = groundDrag;
         else rb.drag = 0;
     }
@@ -78,34 +84,69 @@ public class PlayerMovement : MonoBehaviour
             MovePlayer();
     }
 
-
+    private float desiredMoveSpeed;
+    private float lastDesiredMoveSpeed;
+    private MovementState lastState;
+    private bool keepMomentum;
     private void StateHandler()
     {
         if (restricted)
         {
             state = MovementState.restricted;
         }
+
+        else if (dashing)
+        {
+            state = MovementState.dashing;
+            desiredMoveSpeed = dashSpeed;
+            speedChangeFactor = dashSpeedChangeFactor;
+        }
         else if (wallrunning)
         {
             state = MovementState.wallrunning;
-            moveSpeed = wallrunSpeed;
+            desiredMoveSpeed = wallrunSpeed;
         }
         else if (grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
-            moveSpeed = sprintSpeed;
+            desiredMoveSpeed = sprintSpeed;
         }
 
         else if (grounded)
         {
             state = MovementState.walking;
-            moveSpeed = walkSpeed;
+            desiredMoveSpeed = walkSpeed;
         }
 
         else
         {
             state = MovementState.air;
+
+            if (desiredMoveSpeed < sprintSpeed)
+                desiredMoveSpeed = walkSpeed;
+            else
+                desiredMoveSpeed = sprintSpeed;
         }
+
+        bool desiredMoveSpeedHasChanged = desiredMoveSpeed != lastDesiredMoveSpeed;
+        if(lastState  == MovementState.dashing) keepMomentum = true;
+
+        if (desiredMoveSpeedHasChanged) {
+            if (keepMomentum) {
+
+                StopAllCoroutines();
+                StartCoroutine(SmoothlyLerpMoveSpeed());
+            }
+            else
+            {
+                StopAllCoroutines();
+                moveSpeed = desiredMoveSpeed;
+            }
+
+        }
+
+        lastDesiredMoveSpeed = desiredMoveSpeed;
+        lastState = state;
 
     }
     private void MyInput()
@@ -123,6 +164,9 @@ public class PlayerMovement : MonoBehaviour
 
     private void MovePlayer()
     {
+
+        if (state == MovementState.dashing) return;
+
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
         //on ground
@@ -145,6 +189,10 @@ public class PlayerMovement : MonoBehaviour
             Vector3 limitedVel = flatVel.normalized * moveSpeed;
             rb.velocity = new Vector3(limitedVel.x, rb.velocity.y, limitedVel.z);
         }
+
+
+        if (maxYSpeed != 0 && rb.velocity.y > maxYSpeed)
+            rb.velocity = new Vector3(rb.velocity.x, maxYSpeed, rb.velocity.z);
     }
 
     private void Jump()
@@ -158,5 +206,31 @@ public class PlayerMovement : MonoBehaviour
     private void ResetJump()
     {
         readyToJump = true;
+    }
+
+
+
+    private float speedChangeFactor;
+    private IEnumerator SmoothlyLerpMoveSpeed()
+    {
+        // smoothly lerp movementSpeed to desired value
+        float time = 0;
+        float difference = Mathf.Abs(desiredMoveSpeed - moveSpeed);
+        float startValue = moveSpeed;
+
+        float boostFactor = speedChangeFactor;
+
+        while (time < difference)
+        {
+            moveSpeed = Mathf.Lerp(startValue, desiredMoveSpeed, time / difference);
+
+            time += Time.deltaTime * boostFactor;
+
+            yield return null;
+        }
+
+        speedChangeFactor = 1f;
+        moveSpeed = desiredMoveSpeed;
+        keepMomentum = false;
     }
 }

@@ -447,6 +447,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!4 &1103166910 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 3630703846611074086, guid: f4a464f350d1e4f44bb651791b04ed6d, type: 3}
+  m_PrefabInstance: {fileID: 5960889014921057226}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1496954538 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 6820348819289455148, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
@@ -459,7 +464,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1496954538}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: edfcfc2d96d24fe49b4970bfd20cf1c9, type: 3}
   m_Name: 
@@ -475,7 +480,7 @@ MonoBehaviour:
   maxClimbTime: 2
   detectionLength: 0.7
   sphereCastRadius: 0.25
-  maxWallLookAngle: 46
+  maxWallLookAngle: 30
 --- !u!114 &1496954541 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
@@ -525,7 +530,31 @@ MonoBehaviour:
   exitWallTime: 0.2
   useGravity: 0
   orientation: {fileID: 708505262}
-  camT: {fileID: 0}
+  camT: {fileID: 964515662}
+--- !u!114 &1496954544
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1496954538}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfe381a3f480d76499262d83fba07edb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  orientation: {fileID: 708505262}
+  playerCam: {fileID: 1103166910}
+  dashForce: 50
+  dashUpwardForce: 0
+  maxDashYSpeed: 0
+  dashDuration: 0.3
+  useCameraForward: 0
+  allowAllDirections: 1
+  disableGravity: 1
+  resetVel: 1
+  dashCd: 2
+  dashKey: 101
 --- !u!1 &1637201866
 GameObject:
   m_ObjectHideFlags: 0
@@ -785,7 +814,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 15303, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: ba2ee4f4a170157499193536192992f5, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -984,6 +1013,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: dashSpeed
+      value: 35
+      objectReference: {fileID: 0}
+    - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: walkSpeed
       value: 10
       objectReference: {fileID: 0}
@@ -998,6 +1031,10 @@ PrefabInstance:
     - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: wallrunSpeed
       value: 15
+      objectReference: {fileID: 0}
+    - target: {fileID: 6543733599928398236, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: dashSpeedChangeFactor
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 6820348819289455148, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: m_Name
@@ -1017,6 +1054,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 6820348819289455148, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1496954540}
+    - targetCorrespondingSourceObject: {fileID: 6820348819289455148, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1496954544}
   m_SourcePrefab: {fileID: 100100000, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
 --- !u!1001 &5960889014921057226
 PrefabInstance:
