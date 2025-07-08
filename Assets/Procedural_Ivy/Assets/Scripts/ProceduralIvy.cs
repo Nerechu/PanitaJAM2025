@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -27,17 +26,16 @@ public class ProceduralIvy : MonoBehaviour
 
     private int ivyCount = 0;
 
-    // Este método lo llama el arma al disparar a un objeto en la capa "Plant"
-    public void createIvy(RaycastHit hit)
+    public void createIvy(Vector3 point, Vector3 normal)
     {
-        Vector3 tangent = findTangentFromArbitraryNormal(hit.normal);
+        Vector3 tangent = findTangentFromArbitraryNormal(normal);
         GameObject ivy = new GameObject("Ivy " + ivyCount);
         ivy.transform.SetParent(transform);
 
         for (int i = 0; i < branches; i++)
         {
-            Vector3 dir = Quaternion.AngleAxis(360 / branches * i + Random.Range(0, 360 / branches), hit.normal) * tangent;
-            List<IvyNode> nodes = createBranch(maxPointsForBranch, hit.point, hit.normal, dir);
+            Vector3 dir = Quaternion.AngleAxis(360 / branches * i + Random.Range(0, 360 / branches), normal) * tangent;
+            List<IvyNode> nodes = createBranch(maxPointsForBranch, point, normal, dir);
 
             GameObject branch = new GameObject("Branch " + i);
             Branch b = branch.AddComponent<Branch>();
@@ -76,10 +74,13 @@ public class ProceduralIvy : MonoBehaviour
 
     List<IvyNode> createBranch(int count, Vector3 pos, Vector3 normal, Vector3 dir)
     {
+        List<IvyNode> nodes = new List<IvyNode>();
+
         if (count == maxPointsForBranch)
         {
-            IvyNode rootNode = new IvyNode(pos, normal);
-            return new List<IvyNode> { rootNode }.join(createBranch(count - 1, pos, normal, dir));
+            nodes.Add(new IvyNode(pos, normal));
+            nodes.AddRange(createBranch(count - 1, pos, normal, dir));
+            return nodes;
         }
         else if (count < maxPointsForBranch && count > 0)
         {
@@ -89,74 +90,71 @@ public class ProceduralIvy : MonoBehaviour
             }
 
             RaycastHit hit;
-            Ray ray = new Ray(pos, normal);
             Vector3 p1 = pos + normal * segmentLength;
 
-            if (Physics.Raycast(ray, out hit, segmentLength))
+            if (Physics.Raycast(pos, normal, out hit, segmentLength))
             {
                 p1 = hit.point;
             }
 
-            ray = new Ray(p1, dir);
-
-            if (Physics.Raycast(ray, out hit, segmentLength))
+            if (Physics.Raycast(p1, dir, out hit, segmentLength))
             {
                 Vector3 p2 = hit.point;
-                IvyNode p2Node = new IvyNode(p2, -dir);
-                return new List<IvyNode> { p2Node }.join(createBranch(count - 1, p2, -dir, normal));
+                nodes.Add(new IvyNode(p2, -dir));
+                nodes.AddRange(createBranch(count - 1, p2, -dir, normal));
+                return nodes;
             }
             else
             {
                 Vector3 p2 = p1 + dir * segmentLength;
-                ray = new Ray(applyCorrection(p2, normal), -normal);
 
-                if (Physics.Raycast(ray, out hit, segmentLength))
+                if (Physics.Raycast(applyCorrection(p2, normal), -normal, out hit, segmentLength))
                 {
                     Vector3 p3 = hit.point;
-                    IvyNode p3Node = new IvyNode(p3, normal);
-
                     if (isOccluded(p3, pos, normal))
                     {
                         Vector3 middle = calculateMiddlePoint(p3, pos, (normal + dir) / 2);
                         Vector3 m0 = (pos + middle) / 2;
                         Vector3 m1 = (p3 + middle) / 2;
 
-                        IvyNode m0Node = new IvyNode(m0, normal);
-                        IvyNode m1Node = new IvyNode(m1, normal);
-
-                        return new List<IvyNode> { m0Node, m1Node, p3Node }.join(createBranch(count - 3, p3, normal, dir));
+                        nodes.Add(new IvyNode(m0, normal));
+                        nodes.Add(new IvyNode(m1, normal));
+                        nodes.Add(new IvyNode(p3, normal));
+                        nodes.AddRange(createBranch(count - 3, p3, normal, dir));
+                        return nodes;
                     }
 
-                    return new List<IvyNode> { p3Node }.join(createBranch(count - 1, p3, normal, dir));
+                    nodes.Add(new IvyNode(p3, normal));
+                    nodes.AddRange(createBranch(count - 1, p3, normal, dir));
+                    return nodes;
                 }
                 else
                 {
                     Vector3 p3 = p2 - normal * segmentLength;
-                    ray = new Ray(applyCorrection(p3, normal), -normal);
 
-                    if (Physics.Raycast(ray, out hit, segmentLength))
+                    if (Physics.Raycast(applyCorrection(p3, normal), -normal, out hit, segmentLength))
                     {
                         Vector3 p4 = hit.point;
-                        IvyNode p4Node = new IvyNode(p4, normal);
-
                         if (isOccluded(p4, pos, normal))
                         {
                             Vector3 middle = calculateMiddlePoint(p4, pos, (normal + dir) / 2);
                             Vector3 m0 = (pos + middle) / 2;
                             Vector3 m1 = (p4 + middle) / 2;
 
-                            IvyNode m0Node = new IvyNode(m0, normal);
-                            IvyNode m1Node = new IvyNode(m1, normal);
-
-                            return new List<IvyNode> { m0Node, m1Node, p4Node }.join(createBranch(count - 3, p4, normal, dir));
+                            nodes.Add(new IvyNode(m0, normal));
+                            nodes.Add(new IvyNode(m1, normal));
+                            nodes.Add(new IvyNode(p4, normal));
+                            nodes.AddRange(createBranch(count - 3, p4, normal, dir));
+                            return nodes;
                         }
 
-                        return new List<IvyNode> { p4Node }.join(createBranch(count - 1, p4, normal, dir));
+                        nodes.Add(new IvyNode(p4, normal));
+                        nodes.AddRange(createBranch(count - 1, p4, normal, dir));
+                        return nodes;
                     }
                     else
                     {
                         Vector3 p4 = p3 - normal * segmentLength;
-                        IvyNode p4Node = new IvyNode(p4, dir);
 
                         if (isOccluded(p4, pos, normal))
                         {
@@ -164,25 +162,27 @@ public class ProceduralIvy : MonoBehaviour
                             Vector3 m0 = (pos + middle) / 2;
                             Vector3 m1 = (p4 + middle) / 2;
 
-                            IvyNode m0Node = new IvyNode(m0, dir);
-                            IvyNode m1Node = new IvyNode(m1, dir);
-
-                            return new List<IvyNode> { m0Node, m1Node, p4Node }.join(createBranch(count - 3, p4, dir, -normal));
+                            nodes.Add(new IvyNode(m0, dir));
+                            nodes.Add(new IvyNode(m1, dir));
+                            nodes.Add(new IvyNode(p4, dir));
+                            nodes.AddRange(createBranch(count - 3, p4, dir, -normal));
+                            return nodes;
                         }
 
-                        return new List<IvyNode> { p4Node }.join(createBranch(count - 1, p4, dir, -normal));
+                        nodes.Add(new IvyNode(p4, dir));
+                        nodes.AddRange(createBranch(count - 1, p4, dir, -normal));
+                        return nodes;
                     }
                 }
             }
         }
 
-        return null;
+        return nodes;
     }
 
     bool isOccluded(Vector3 from, Vector3 to)
     {
-        Ray ray = new Ray(from, (to - from).normalized);
-        return Physics.Raycast(ray, (to - from).magnitude);
+        return Physics.Raycast(from, (to - from).normalized, (to - from).magnitude);
     }
 
     bool isOccluded(Vector3 from, Vector3 to, Vector3 normal)

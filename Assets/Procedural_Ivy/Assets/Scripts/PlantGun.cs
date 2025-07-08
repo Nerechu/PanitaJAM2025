@@ -1,5 +1,4 @@
 ﻿using UnityEngine;
-using System.Collections;
 
 public class PlantGun : MonoBehaviour
 {
@@ -8,65 +7,50 @@ public class PlantGun : MonoBehaviour
     public Transform shotOrigin;
     public ProceduralIvy ivySystem;
     public LayerMask plantLayer;
-    public float maxDistance = 100f;
+    public float launchForce = 80f;
 
-    [Header("Feedback Visual")]
-    public LineRenderer shotLine;
-    public float shotDuration = 0.05f;
+    [Header("Semilla")]
+    public GameObject seedPrefab;
 
-    [Header("Impacto")]
-    public GameObject impactParticlePrefab; // ← NUEVO: prefab de partícula de impacto
+    [Header("Feedback visual")]
+    public GameObject impactParticlePrefab;   // Partícula al impactar
 
     void Update()
     {
         if (Input.GetMouseButtonDown(0))
         {
-            Ray ray = new Ray(fpsCamera.transform.position, fpsCamera.transform.forward);
-            RaycastHit hit;
-
-            if (Physics.Raycast(ray, out hit, maxDistance))
-            {
-                // Línea del disparo
-                StartCoroutine(ShowShotRay(shotOrigin.position, hit.point));
-
-                // Efecto de impacto visual
-                SpawnImpactParticle(hit.point, hit.normal);
-
-                // Interacción con capa de plantas
-                if (((1 << hit.collider.gameObject.layer) & plantLayer) != 0)
-                {
-                    ivySystem.createIvy(hit);
-                    ivySystem.combineAndClear();
-                }
-            }
-            else
-            {
-                // Disparo al aire
-                StartCoroutine(ShowShotRay(shotOrigin.position, shotOrigin.position + fpsCamera.transform.forward * maxDistance));
-            }
+            FireSeed();
         }
     }
 
-    void SpawnImpactParticle(Vector3 position, Vector3 normal)
+    void FireSeed()
     {
-        if (impactParticlePrefab != null)
+        if (seedPrefab != null)
         {
-            GameObject impact = Instantiate(impactParticlePrefab, position, Quaternion.LookRotation(normal));
-            Destroy(impact, 2f); // Destruir después de 2 segundos
+            GameObject seed = Instantiate(seedPrefab, shotOrigin.position, Quaternion.identity);
+
+            Rigidbody rb = seed.GetComponent<Rigidbody>();
+            if (rb != null)
+            {
+                rb.velocity = fpsCamera.transform.forward * launchForce;
+            }
+
+            SeedProjectile seedScript = seed.GetComponent<SeedProjectile>();
+            if (seedScript != null)
+            {
+                seedScript.impactParticlePrefab = impactParticlePrefab;
+                seedScript.ivySystem = ivySystem;
+                seedScript.plantLayer = plantLayer;
+            }
+
+            // Ignorar colisión entre el proyectil y este objeto (arma/jugador)
+            Collider seedCollider = seed.GetComponent<Collider>();
+            Collider ownCollider = GetComponent<Collider>();
+
+            if (seedCollider != null && ownCollider != null)
+            {
+                Physics.IgnoreCollision(seedCollider, ownCollider);
+            }
         }
-    }
-
-    IEnumerator ShowShotRay(Vector3 start, Vector3 end)
-    {
-        if (shotLine == null)
-            yield break;
-
-        shotLine.SetPosition(0, start);
-        shotLine.SetPosition(1, end);
-        shotLine.enabled = true;
-
-        yield return new WaitForSeconds(shotDuration);
-
-        shotLine.enabled = false;
     }
 }
