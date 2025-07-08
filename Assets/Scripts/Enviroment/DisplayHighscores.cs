@@ -25,8 +25,13 @@ public class DisplayHighscores : MonoBehaviour
             rNames[i].text = i + 1 + ". ";
             if (highscoreList.Length > i)
             {
-                rScores[i].text = highscoreList[i].score.ToString();
-                rNames[i].text = highscoreList[i].username;
+                //AQUI CAMBIAR PARA CALCULAR EL TIEMPO
+                int remainingTime = 300 - highscoreList[i].score; //Assuming score is in seconds, 300 seconds = 5 minutes
+                int minutes = Mathf.FloorToInt(remainingTime / 60);
+                int seconds = Mathf.FloorToInt(remainingTime % 60);
+                rScores[i].text = string.Format("{0:00}:{1:00}", minutes, seconds);
+                string name = (i + 1) + ". " + highscoreList[i].username;
+                rNames[i].text = name;
             }
         }
     }

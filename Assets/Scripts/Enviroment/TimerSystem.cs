@@ -9,7 +9,14 @@ public class TimerSystem : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
     float elapsedTime = 0f;
-    [SerializeField] float remainingTime = 300f;
+    public float remainingTime = 300f;
+    bool firstTime = true;
+    public static TimerSystem instance;
+
+    private void Awake()
+    {
+        instance = this; // Sets the static instance
+    }
 
     void Update()
     {
@@ -17,6 +24,11 @@ public class TimerSystem : MonoBehaviour
         if(remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
+            if(remainingTime < 290 && firstTime == true)
+            {
+                firstTime = false;
+                Manager.instance.Win();
+            }
         }
         else if (remainingTime <= 0)
         {
