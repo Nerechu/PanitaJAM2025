@@ -134,7 +134,7 @@ GameObject:
   - component: {fileID: 2284563}
   - component: {fileID: 2284562}
   - component: {fileID: 2284561}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (4)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -239,7 +239,7 @@ GameObject:
   - component: {fileID: 64405788}
   - component: {fileID: 64405787}
   - component: {fileID: 64405786}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (5)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -344,7 +344,7 @@ GameObject:
   - component: {fileID: 97558385}
   - component: {fileID: 97558384}
   - component: {fileID: 97558383}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (3)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -659,7 +659,7 @@ GameObject:
   - component: {fileID: 422981938}
   - component: {fileID: 422981937}
   - component: {fileID: 422981936}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (8)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -989,7 +989,7 @@ GameObject:
   - component: {fileID: 1627804796}
   - component: {fileID: 1627804795}
   - component: {fileID: 1627804794}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (7)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1466,7 +1466,7 @@ GameObject:
   - component: {fileID: 1959652413}
   - component: {fileID: 1959652412}
   - component: {fileID: 1959652411}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Suelo (9)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1724,6 +1724,14 @@ PrefabInstance:
       propertyPath: cam
       value: 
       objectReference: {fileID: 1103166910}
+    - target: {fileID: 7847085475773383785, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: horizontalThrustForce
+      value: 50
+      objectReference: {fileID: 0}
+    - target: {fileID: 7847085475773383785, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: whatIsGrappleable.m_Bits
+      value: 192
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
