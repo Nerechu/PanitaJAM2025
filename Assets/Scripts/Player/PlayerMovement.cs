@@ -27,6 +27,8 @@ public class PlayerMovement : MonoBehaviour
     public float vaultSpeed;
     public float airMinSpeed;
 
+    public float swingSpeed;
+
 
     [Header("Keybinds")]
     public KeyCode jumpKey = KeyCode.Space;
@@ -57,13 +59,15 @@ public class PlayerMovement : MonoBehaviour
         wallrunning,
         restricted,
         dashing,
-        climbing
+        climbing,
+        swinging
     }
 
     public bool wallrunning;
     public bool restricted;
     public bool dashing;
     public bool climbing;
+    public bool swinging;
 
     private void Start()
     {
@@ -124,6 +128,11 @@ public class PlayerMovement : MonoBehaviour
             desiredMoveSpeed = walkSpeed;
         }
 
+        else if (swinging)
+        {
+            state = MovementState.swinging;
+            desiredMoveSpeed = swingSpeed;
+        }
         else
         {
             state = MovementState.air;
@@ -172,6 +181,7 @@ public class PlayerMovement : MonoBehaviour
     {
 
         if (state == MovementState.dashing) return;
+        if (state == MovementState.swinging) return;
 
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
