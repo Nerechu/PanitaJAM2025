@@ -1,50 +1,30 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MeshGroup {
-    public string materialName;
-    public Color color;
-    public Color colorEnd;
-    public List<Mesh> meshes;
-    public List<Transform> transforms;
-
-    public MeshGroup(string materialName, Color materialColor, Color materialColorEnd) {
-        this.materialName = materialName;
-        this.color = materialColor;
-        this.colorEnd = materialColorEnd;
-        this.meshes = new List<Mesh>();
-        this.transforms = new List<Transform>();
-    }
-}
-
-// public class MeshChunk {
-//     public Mesh mesh;
-//     public Transform transform;
-
-//     public MeshChunk(Mesh mesh, Transform transform) {
-//         this.mesh = mesh;
-//         this.transform = transform;
-//     }
-// }
-
-public class MeshManager : Singleton<MeshManager> {
+public class MeshManager : Singleton<MeshManager>
+{
     Dictionary<string, MeshGroupRenderer> meshGroupRenderers;
     GameObject meshParent;
 
-    public void addMesh(Transform t, Mesh mesh, Material material) {
-        if (meshParent == null) {
+    public void addMesh(Transform t, Mesh mesh, Material material)
+    {
+        if (meshParent == null)
+        {
             meshParent = new GameObject("meshParent");
         }
 
-        if (meshGroupRenderers == null) {
+        if (meshGroupRenderers == null)
+        {
             meshGroupRenderers = new Dictionary<string, MeshGroupRenderer>();
         }
 
-        if (meshGroupRenderers.ContainsKey(material.name)) {
+        if (meshGroupRenderers.ContainsKey(material.name))
+        {
             meshGroupRenderers[material.name].add(t, mesh, material);
-        } else {
+        }
+        else
+        {
             GameObject render = new GameObject("meshGroup - " + material.name);
-            print("new object:" + material.name);
             render.transform.SetParent(meshParent.transform);
 
             MeshFilter mFilter = render.AddComponent<MeshFilter>();
@@ -56,12 +36,14 @@ public class MeshManager : Singleton<MeshManager> {
             groupRenderer.add(t, mesh, material);
             meshGroupRenderers.Add(material.name, groupRenderer);
         }
-
     }
 
-    public void combineAll() {
-        if (meshGroupRenderers != null) {
-            foreach (var group in meshGroupRenderers) {
+    public void combineAll()
+    {
+        if (meshGroupRenderers != null)
+        {
+            foreach (var group in meshGroupRenderers)
+            {
                 group.Value.combineAndRender();
             }
             meshGroupRenderers.Clear();
@@ -69,4 +51,56 @@ public class MeshManager : Singleton<MeshManager> {
         }
     }
 
+    // Nuevo método para combinar solo los meshes bajo un Transform específico
+    public void combineUnder(Transform parent)
+    {
+        if (meshParent == null)
+        {
+            meshParent = new GameObject("meshParent");
+        }
+        if (meshGroupRenderers == null)
+        {
+            meshGroupRenderers = new Dictionary<string, MeshGroupRenderer>();
+        }
+
+        MeshFilter[] meshFilters = parent.GetComponentsInChildren<MeshFilter>();
+
+        foreach (MeshFilter mf in meshFilters)
+        {
+            if (mf == null || mf.sharedMesh == null) continue;
+            Renderer rend = mf.GetComponent<Renderer>();
+            if (rend == null || rend.sharedMaterial == null) continue;
+
+            Material mat = rend.sharedMaterial;
+            string matName = mat.name;
+
+            if (meshGroupRenderers.ContainsKey(matName))
+            {
+                meshGroupRenderers[matName].add(mf.transform, mf.sharedMesh, mat);
+            }
+            else
+            {
+                GameObject render = new GameObject("meshGroup - " + matName);
+                render.transform.SetParent(meshParent.transform);
+
+                MeshFilter mFilter = render.AddComponent<MeshFilter>();
+                MeshRenderer mRenderer = render.AddComponent<MeshRenderer>();
+
+                MeshGroupRenderer groupRenderer = render.AddComponent<MeshGroupRenderer>();
+                groupRenderer.meshFilter = mFilter;
+                groupRenderer.meshRenderer = mRenderer;
+                groupRenderer.add(mf.transform, mf.sharedMesh, mat);
+                meshGroupRenderers.Add(matName, groupRenderer);
+            }
+        }
+
+        // Combina los grupos generados
+        foreach (var group in meshGroupRenderers)
+        {
+            group.Value.combineAndRender();
+        }
+
+        meshGroupRenderers.Clear();
+        Resources.UnloadUnusedAssets();
+    }
 }
