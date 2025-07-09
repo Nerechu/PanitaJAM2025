@@ -223,7 +223,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 985310049}
-  - component: {fileID: 985310048}
   - component: {fileID: 985310050}
   m_Layer: 0
   m_Name: Manager
@@ -232,20 +231,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &985310048
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 985310047}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cb69cbddd3a22ff4a8db4352910497f9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  timerText: {fileID: 1792719458}
-  remainingTime: 300
 --- !u!4 &985310049
 Transform:
   m_ObjectHideFlags: 0
@@ -274,17 +259,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   time: 0
---- !u!114 &1792719458 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 4457452816882504869, guid: 38373f007f8a00f46b3e5671764c60b3, type: 3}
-  m_PrefabInstance: {fileID: 6785024083955787082}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1805147695
 GameObject:
   m_ObjectHideFlags: 0
@@ -539,6 +513,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas Record
       objectReference: {fileID: 0}
+    - target: {fileID: 7060336343627007833, guid: 78457456c19adac478daf5dc8b0011e6, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -636,12 +614,16 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas Level
       objectReference: {fileID: 0}
+    - target: {fileID: 5523605700643624167, guid: 38373f007f8a00f46b3e5671764c60b3, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 38373f007f8a00f46b3e5671764c60b3, type: 3}
---- !u!1001 &8564006606857096483
+--- !u!1001 &8841347660937711552
 PrefabInstance:
   m_ObjectHideFlags: 0
   serializedVersion: 2
@@ -652,6 +634,10 @@ PrefabInstance:
     - target: {fileID: 1774803563680816710, guid: 2da6d14cf8d884545af517d06b99b9d4, type: 3}
       propertyPath: m_Name
       value: Canvas Win
+      objectReference: {fileID: 0}
+    - target: {fileID: 1774803563680816710, guid: 2da6d14cf8d884545af517d06b99b9d4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3034254529746157534, guid: 2da6d14cf8d884545af517d06b99b9d4, type: 3}
       propertyPath: m_Pivot.x
@@ -744,7 +730,7 @@ SceneRoots:
   m_Roots:
   - {fileID: 1983102362}
   - {fileID: 266034510}
-  - {fileID: 8564006606857096483}
+  - {fileID: 8841347660937711552}
   - {fileID: 1805147698}
   - {fileID: 6785024083955787082}
   - {fileID: 5257844221126582680}

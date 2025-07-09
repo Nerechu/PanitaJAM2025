@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Manager : MonoBehaviour
 {
-    public float time;
+    public int time;
     public static Manager instance;
     private void Awake()
     {
@@ -22,7 +22,7 @@ public class Manager : MonoBehaviour
 
     public void Win()
     {
-        time = TimerSystem.instance.remainingTime;
+        time = Mathf.FloorToInt(TimerSystem.instance.remainingTime);
         SceneManager.LoadScene("Win");
     }
 }

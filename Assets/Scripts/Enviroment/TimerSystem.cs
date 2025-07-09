@@ -24,9 +24,10 @@ public class TimerSystem : MonoBehaviour
         if(remainingTime > 0)
         {
             remainingTime -= Time.deltaTime;
-            if(remainingTime < 290 && firstTime == true)
+            if(remainingTime < 297 && firstTime == true)
             {
                 firstTime = false;
+                Debug.Log("Timer");
                 Manager.instance.Win();
             }
         }
@@ -49,7 +50,6 @@ public class TimerSystem : MonoBehaviour
     {
         if (remainingTime <= 0) // 5 min in seconds in inspector
         {
-            //Debug.Log("Time's up! You lose!");
             SceneManager.LoadScene("Lose");
         }
     }

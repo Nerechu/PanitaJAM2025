@@ -12,6 +12,6 @@ public class Retry : MonoBehaviour
 
     public void MainMenuScene()
     {
-        SceneManager.LoadScene("Main Menu");
+        SceneManager.LoadScene("xPKeh's Scene");
     }
 }
