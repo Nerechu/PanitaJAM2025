@@ -16,6 +16,8 @@ public class PlayerMovement : MonoBehaviour
     public float jumpCooldown;
     public float airMultiplier;
     public bool readyToJump;
+    public float coyoteTime;
+    public float coyoteTimeTimer;
 
     public float wallrunSpeed;
 
@@ -26,6 +28,8 @@ public class PlayerMovement : MonoBehaviour
     public float climbSpeed;
     public float vaultSpeed;
     public float airMinSpeed;
+
+    public float swingSpeed;
 
 
     [Header("Keybinds")]
@@ -57,19 +61,22 @@ public class PlayerMovement : MonoBehaviour
         wallrunning,
         restricted,
         dashing,
-        climbing
+        climbing,
+        swinging
     }
 
     public bool wallrunning;
     public bool restricted;
     public bool dashing;
     public bool climbing;
+    public bool swinging;
 
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         rb.freezeRotation = true;
         readyToJump = true;
+        coyoteTimeTimer = coyoteTime;
     }
     private void Update()
     {
@@ -106,24 +113,34 @@ public class PlayerMovement : MonoBehaviour
             state = MovementState.dashing;
             desiredMoveSpeed = dashSpeed;
             speedChangeFactor = dashSpeedChangeFactor;
+            coyoteTimeTimer = 0;
         }
         else if (wallrunning)
         {
             state = MovementState.wallrunning;
             desiredMoveSpeed = wallrunSpeed;
+            coyoteTimeTimer = 0;
         }
         else if (grounded && Input.GetKey(sprintKey))
         {
             state = MovementState.sprinting;
             desiredMoveSpeed = sprintSpeed;
+            if (readyToJump) coyoteTimeTimer = coyoteTime;
         }
 
         else if (grounded)
         {
             state = MovementState.walking;
             desiredMoveSpeed = walkSpeed;
+            if (readyToJump) coyoteTimeTimer = coyoteTime;
         }
 
+        else if (swinging)
+        {
+            state = MovementState.swinging;
+            desiredMoveSpeed = swingSpeed;
+            coyoteTimeTimer = 0;
+        }
         else
         {
             state = MovementState.air;
@@ -151,6 +168,12 @@ public class PlayerMovement : MonoBehaviour
 
         }
 
+        //CoyoteTime start
+        if((lastState == MovementState.walking || lastState == MovementState.sprinting) && state == MovementState.air)
+        {
+            StartCoroutine(CoyoteTime());
+        }
+
         lastDesiredMoveSpeed = desiredMoveSpeed;
         lastState = state;
 
@@ -160,18 +183,21 @@ public class PlayerMovement : MonoBehaviour
         horizontalInput = Input.GetAxisRaw("Horizontal");
         verticalInput = Input.GetAxisRaw("Vertical");
 
-        if (Input.GetKey(jumpKey) && readyToJump && grounded){
+        if (Input.GetKey(jumpKey) && readyToJump && (grounded || coyoteTimeTimer > 0)){
             readyToJump = false;
             Jump();
 
             Invoke(nameof(ResetJump), jumpCooldown); 
         }
+
+
     }
 
     private void MovePlayer()
     {
 
         if (state == MovementState.dashing) return;
+        if (state == MovementState.swinging) return;
 
         moveDirection = orientation.forward * verticalInput + orientation.right * horizontalInput;
 
@@ -204,6 +230,8 @@ public class PlayerMovement : MonoBehaviour
     private void Jump()
     {
         rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        coyoteTimeTimer = 0;
+        StopAllCoroutines();
 
         rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
 
@@ -213,8 +241,6 @@ public class PlayerMovement : MonoBehaviour
     {
         readyToJump = true;
     }
-
-
 
     private float speedChangeFactor;
     private IEnumerator SmoothlyLerpMoveSpeed()
@@ -238,5 +264,15 @@ public class PlayerMovement : MonoBehaviour
         speedChangeFactor = 1f;
         moveSpeed = desiredMoveSpeed;
         keepMomentum = false;
+    }
+
+    private IEnumerator CoyoteTime()
+    {
+        while (coyoteTimeTimer > 0)
+        {
+            coyoteTimeTimer -= Time.deltaTime;
+            yield return new WaitForFixedUpdate();
+        }
+        yield return null;
     }
 }

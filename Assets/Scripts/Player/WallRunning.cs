@@ -228,6 +228,8 @@ public class WallRunning : MonoBehaviour
             rb.velocity = new Vector3(rb.velocity.x, wallClimbSpeed, rb.velocity.z);
         if (downwardsRunning)
             rb.velocity = new Vector3(rb.velocity.x, -wallClimbSpeed, rb.velocity.z);
+        if (!upwardsRunning && !downwardsRunning)
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
 
         if (!exitingWall && !(wallLeft && horizontalInput > 0) && !(wallRight && horizontalInput < 0))
             rb.AddForce(-wallNormal * 100, ForceMode.Force);
