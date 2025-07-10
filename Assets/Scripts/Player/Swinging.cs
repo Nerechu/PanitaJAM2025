@@ -1,12 +1,12 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class SwingingDone : MonoBehaviour
+public class Swinging : MonoBehaviour
 {
     [Header("References")]
     public LineRenderer lr;
-    public Transform gunTip, cam, player;
+    public Transform gunTip;
+    [SerializeField] private Transform cam;
+    public Transform player;
     public LayerMask whatIsGrappleable;
     public PlayerMovement pm;
 
@@ -16,31 +16,51 @@ public class SwingingDone : MonoBehaviour
     private SpringJoint joint;
     private Vector3 realHitPoint;
 
-
-    public float spring; 
-    public float damper;    
-    public float massScale;    
+    public float spring;
+    public float damper;
+    public float massScale;
 
     [Header("OdmGear")]
-    public Transform orientation;
     public Rigidbody rb;
     public float horizontalThrustForce;
     public float forwardThrustForce;
     public float extendCableSpeed;
 
-
     [Header("Input")]
     public KeyCode swingKey = KeyCode.Mouse1;
 
+    [Header("Effects")]
+    [SerializeField] private GameObject hookFailEffectPrefab;
+
+    private Vector3 currentGrapplePosition;
+    private bool isAttemptingSwing;
+
+    private void Awake()
+    {
+        if (cam == null)
+            cam = transform.Find("PlayerCamera");
+    }
 
     private void Update()
     {
-        if (Input.GetKeyDown(swingKey)) StartSwing();
+        if (Input.GetKeyDown(swingKey)) AttemptSwing();
         if (Input.GetKeyUp(swingKey)) StopSwing();
 
-        CheckForSwingPoints();
+        if (isAttemptingSwing && joint == null)
+            UpdateLineToMouseDirection();
 
-        if (joint != null) OdmGearMovement();
+        if (joint != null)
+            OdmGearMovement();
+        void Update()
+        {
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Vector3 testPos = transform.position + transform.forward * 2f;
+                GameObject effect = Instantiate(hookFailEffectPrefab, testPos, Quaternion.identity);
+                Destroy(effect, 2f);
+            }
+        }
+
     }
 
     private void LateUpdate()
@@ -48,106 +68,156 @@ public class SwingingDone : MonoBehaviour
         DrawRope();
     }
 
-    private void CheckForSwingPoints()
+    private void AttemptSwing()
     {
-
-        RaycastHit raycastHit;
-        Physics.Raycast(cam.position, cam.forward,
-                            out raycastHit, maxSwingDistance, whatIsGrappleable);
-
-        
-
-        // Option 1 - Direct Hit
-        if (raycastHit.point != Vector3.zero)
-            realHitPoint = raycastHit.point;
-
-        // Miss
-        else realHitPoint = Vector3.zero;
-        
-    }
-
-
-    private void StartSwing()
-    {
-
-        if (realHitPoint == Vector3.zero) return;
-        // deactivate active grapple
-
-        pm.swinging = true;
-
-        swingPoint = realHitPoint;
-        joint = player.gameObject.AddComponent<SpringJoint>();
-        joint.autoConfigureConnectedAnchor = false;
-        joint.connectedAnchor = swingPoint;
-
-        float distanceFromPoint = Vector3.Distance(player.position, swingPoint);
-
-        // the distance grapple will try to keep from grapple point. 
-        joint.maxDistance = distanceFromPoint * 0.8f;
-        joint.minDistance = distanceFromPoint * 0.25f;
-
-        // customize values as you like
-        joint.spring = spring;
-        joint.damper = damper;
-        joint.massScale = massScale;
-
-        lr.positionCount = 2;
+        RaycastHit hit;
         currentGrapplePosition = gunTip.position;
+        SetupLineRenderer();
+
+        bool hitSomething = Physics.Raycast(cam.position, cam.forward, out hit, maxSwingDistance);
+
+        if (hitSomething)
+        {
+            realHitPoint = hit.point;
+
+            // Dibujar línea visualmente, aunque no se enganche
+            isAttemptingSwing = true;
+
+            // ¿Es hookeable?
+            if (((1 << hit.collider.gameObject.layer) & whatIsGrappleable) != 0)
+            {
+                swingPoint = hit.point;
+                pm.swinging = true;
+
+                joint = player.gameObject.AddComponent<SpringJoint>();
+                joint.autoConfigureConnectedAnchor = false;
+                joint.connectedAnchor = swingPoint;
+
+                float distance = Vector3.Distance(player.position, swingPoint);
+                joint.maxDistance = distance * 0.8f;
+                joint.minDistance = distance * 0.25f;
+
+                joint.spring = spring;
+                joint.damper = damper;
+                joint.massScale = massScale;
+            }
+            else
+            {
+                // 🔥 Mostrar efecto de fallo en el punto de impacto
+                if (hookFailEffectPrefab != null)
+                {
+                    GameObject effect = Instantiate(hookFailEffectPrefab, realHitPoint, Quaternion.LookRotation(-cam.forward));
+                    Destroy(effect, 2f);
+                }
+
+                Invoke(nameof(StopSwing), 0.2f);
+
+            }
+        }
+        else
+        {
+            // No golpeó nada, dispara al vacío
+            realHitPoint = cam.position + cam.forward * maxSwingDistance;
+            isAttemptingSwing = true;
+
+            if (hookFailEffectPrefab != null)
+            {
+                Instantiate(hookFailEffectPrefab, realHitPoint, Quaternion.LookRotation(-cam.forward));
+            }
+
+            Invoke(nameof(StopSwing), 0.05f);  // También mostrar brevemente
+        }
     }
+
+
 
     public void StopSwing()
     {
+        isAttemptingSwing = false;
         realHitPoint = Vector3.zero;
-
         pm.swinging = false;
 
-        lr.positionCount = 0;
+        if (lr != null)
+        {
+            lr.positionCount = 0;
 
-        Destroy(joint);
+            if (lr.gameObject.name == "GrappleLine")
+            {
+                Destroy(lr.gameObject);
+                lr = null;
+            }
+        }
+
+        if (joint != null)
+        {
+            Destroy(joint);
+        }
     }
 
     private void OdmGearMovement()
     {
-        // right
-        if (Input.GetKey(KeyCode.D)) rb.AddForce(orientation.right * horizontalThrustForce * Time.deltaTime);
-        // left
-        if (Input.GetKey(KeyCode.A)) rb.AddForce(-orientation.right * horizontalThrustForce * Time.deltaTime);
+        if (Input.GetKey(KeyCode.D))
+            rb.AddForce(transform.right * horizontalThrustForce * Time.deltaTime);
+        if (Input.GetKey(KeyCode.A))
+            rb.AddForce(-transform.right * horizontalThrustForce * Time.deltaTime);
+        if (Input.GetKey(KeyCode.W))
+            rb.AddForce(transform.forward * horizontalThrustForce * Time.deltaTime);
 
-        // forward
-        if (Input.GetKey(KeyCode.W)) rb.AddForce(orientation.forward * horizontalThrustForce * Time.deltaTime);
-
-        // shorten cable
         if (Input.GetKey(KeyCode.Space))
         {
-            Vector3 directionToPoint = swingPoint - transform.position;
-            rb.AddForce(directionToPoint.normalized * forwardThrustForce * Time.deltaTime);
+            Vector3 dir = swingPoint - transform.position;
+            rb.AddForce(dir.normalized * forwardThrustForce * Time.deltaTime);
 
-            float distanceFromPoint = Vector3.Distance(transform.position, swingPoint);
-
-            joint.maxDistance = distanceFromPoint * 0.8f;
-            joint.minDistance = distanceFromPoint * 0.25f;
+            float dist = Vector3.Distance(transform.position, swingPoint);
+            joint.maxDistance = dist * 0.8f;
+            joint.minDistance = dist * 0.25f;
         }
-        // extend cable
+
         if (Input.GetKey(KeyCode.S))
         {
-            float extendedDistanceFromPoint = Vector3.Distance(transform.position, swingPoint) + extendCableSpeed;
-
-            joint.maxDistance = extendedDistanceFromPoint * 0.8f;
-            joint.minDistance = extendedDistanceFromPoint * 0.25f;
+            float dist = Vector3.Distance(transform.position, swingPoint) + extendCableSpeed;
+            joint.maxDistance = dist * 0.8f;
+            joint.minDistance = dist * 0.25f;
         }
     }
 
-    private Vector3 currentGrapplePosition;
-
     private void DrawRope()
     {
-        // if not grappling, don't draw rope
-        if (!joint) return;
+        if (!isAttemptingSwing || lr == null) return;
 
-        currentGrapplePosition =
-            Vector3.Lerp(currentGrapplePosition, swingPoint, Time.deltaTime * 8f);
+        if (joint != null)
+        {
+            currentGrapplePosition = Vector3.Lerp(currentGrapplePosition, swingPoint, Time.deltaTime * 8f);
+            lr.SetPosition(0, gunTip.position);
+            lr.SetPosition(1, currentGrapplePosition);
+        }
+        else
+        {
+            lr.SetPosition(0, gunTip.position);
+            lr.SetPosition(1, realHitPoint);
+        }
+    }
 
+    private void SetupLineRenderer()
+    {
+        if (lr == null)
+        {
+            GameObject lrObj = new GameObject("GrappleLine");
+            lr = lrObj.AddComponent<LineRenderer>();
+            lr.material = new Material(Shader.Find("Sprites/Default"));
+            lr.startWidth = 0.05f;
+            lr.endWidth = 0.05f;
+            lr.numCapVertices = 8;
+        }
+
+        lr.positionCount = 2;
+    }
+
+    private void UpdateLineToMouseDirection()
+    {
+        if (lr == null) return;
+        realHitPoint = cam.position + cam.forward * maxSwingDistance;
         lr.SetPosition(0, gunTip.position);
-        lr.SetPosition(1, currentGrapplePosition);
+        lr.SetPosition(1, realHitPoint);
     }
 }

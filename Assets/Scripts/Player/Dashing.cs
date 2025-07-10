@@ -1,20 +1,17 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Dashing : MonoBehaviour
 {
     [Header("References")]
-    public Transform orientation;
     public Transform playerCam;
     private Rigidbody rb;
     private PlayerMovement pm;
 
     [Header("Dashing")]
-    public float dashForce;
-    public float dashUpwardForce;
-    public float maxDashYSpeed;
-    public float dashDuration;
+    public float dashForce = 20f;
+    public float dashUpwardForce = 2f;
+    public float maxDashYSpeed = 25f;
+    public float dashDuration = 0.25f;
 
     [Header("Settings")]
     public bool useCameraForward = true;
@@ -23,16 +20,21 @@ public class Dashing : MonoBehaviour
     public bool resetVel = true;
 
     [Header("Cooldown")]
-    public float dashCd;
+    public float dashCd = 1f;
     private float dashCdTimer;
 
     [Header("Input")]
     public KeyCode dashKey = KeyCode.E;
 
+    private Vector3 delayedForceToApply;
+
     private void Start()
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
+
+        if (playerCam == null)
+            playerCam = GameObject.Find("PlayerCamera")?.transform;
     }
 
     private void Update()
@@ -47,32 +49,23 @@ public class Dashing : MonoBehaviour
     private void Dash()
     {
         if (dashCdTimer > 0) return;
-        else dashCdTimer = dashCd;
+        dashCdTimer = dashCd;
 
         pm.dashing = true;
         pm.maxYSpeed = maxDashYSpeed;
 
-        Transform forwardT;
-
-        if (useCameraForward)
-            forwardT = playerCam; /// where you're looking
-        else
-            forwardT = orientation; /// where you're facing (no up or down)
-
+        Transform forwardT = useCameraForward ? playerCam : transform;
         Vector3 direction = GetDirection(forwardT);
-
-        Vector3 forceToApply = direction * dashForce + orientation.up * dashUpwardForce;
+        Vector3 forceToApply = direction * dashForce + Vector3.up * dashUpwardForce;
 
         if (disableGravity)
             rb.useGravity = false;
 
         delayedForceToApply = forceToApply;
         Invoke(nameof(DelayedDashForce), 0.025f);
-
         Invoke(nameof(ResetDash), dashDuration);
     }
 
-    private Vector3 delayedForceToApply;
     private void DelayedDashForce()
     {
         if (resetVel)
@@ -91,20 +84,13 @@ public class Dashing : MonoBehaviour
 
     private Vector3 GetDirection(Transform forwardT)
     {
-        float horizontalInput = Input.GetAxisRaw("Horizontal");
-        float verticalInput = Input.GetAxisRaw("Vertical");
+        float h = Input.GetAxisRaw("Horizontal");
+        float v = Input.GetAxisRaw("Vertical");
 
-        Vector3 direction = new Vector3();
+        Vector3 dir = allowAllDirections
+            ? forwardT.forward * v + forwardT.right * h
+            : forwardT.forward;
 
-        if (allowAllDirections)
-            direction = forwardT.forward * verticalInput + forwardT.right * horizontalInput;
-        else
-            direction = forwardT.forward;
-
-        if (verticalInput == 0 && horizontalInput == 0)
-            direction = forwardT.forward;
-
-        return direction.normalized;
+        return (h == 0 && v == 0) ? forwardT.forward : dir.normalized;
     }
 }
-
