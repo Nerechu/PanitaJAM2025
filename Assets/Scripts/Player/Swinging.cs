@@ -120,9 +120,9 @@ public class Swinging : MonoBehaviour
 
                 Invoke(nameof(StopSwing), 0.2f);
 
-                //Audio de fallo
+                //Audio de fallo con volumen defailt 1 y 0,75 sec de delay
 
-                AudioManager.instance.PlaySound(SoundType.HOOKMISSED);
+                AudioManager.instance.PlayDelayedSound(SoundType.HOOKMISSED, 1, 0.75f);
             }
         }
         else

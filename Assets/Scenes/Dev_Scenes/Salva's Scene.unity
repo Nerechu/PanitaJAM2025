@@ -874,7 +874,7 @@ AudioListener:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 754934550}
-  m_Enabled: 1
+  m_Enabled: 0
 --- !u!1 &1030400419 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 2353600328335836179, guid: ceec7516237b4104b94300043ca39784, type: 3}
@@ -2147,6 +2147,10 @@ PrefabInstance:
       propertyPath: gunTip
       value: 
       objectReference: {fileID: 282495929}
+    - target: {fileID: 7848279068175814280, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
+      propertyPath: climbSpeed
+      value: 12
+      objectReference: {fileID: 0}
     - target: {fileID: 8258870693761843166, guid: 75fc846e9994fe64c93d70d7cc405434, type: 3}
       propertyPath: m_TagString
       value: Player

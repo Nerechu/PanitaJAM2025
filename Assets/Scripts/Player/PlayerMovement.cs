@@ -94,13 +94,13 @@ public class PlayerMovement : MonoBehaviour
 
         if (state == MovementState.walking && (horizontalInput != 0 || verticalInput != 0))
         {
-            if (!AudioManager.instance.audioSource.isPlaying)
+            if (!AudioManager.instance.audioSource.isPlaying && Mathf.Abs(rb.velocity.magnitude) > 0.5f)
                 AudioManager.instance.PlaySound(SoundType.WALK);
         }
 
         else if (state == MovementState.sprinting && (horizontalInput != 0 || verticalInput != 0))
         {
-            if (!AudioManager.instance.audioSource.isPlaying)
+            if (!AudioManager.instance.audioSource.isPlaying && Mathf.Abs(rb.velocity.magnitude) > 0.5f)
                 AudioManager.instance.PlaySound(SoundType.RUN);
         }
 
@@ -130,7 +130,6 @@ public class PlayerMovement : MonoBehaviour
 
         // Jump sound
 
-       AudioManager.instance.audioSource.Stop();
        AudioManager.instance.PlaySound(SoundType.JUMP);
     }
 

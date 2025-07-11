@@ -33,7 +33,14 @@ public class SeedProjectile : MonoBehaviour
         {
             ivySystem.createIvy(contact.point, contact.normal);
             ivySystem.combineAndClear();
+
+            //Audio
+
+            AudioManager.instance.PlaySound(SoundType.SEEDPLANTED, .6f);
+            AudioManager.instance.PlaySound(SoundType.PLANTGROWTH);
         }
+
+        else { AudioManager.instance.PlaySound(SoundType.SEEDMISSED); }
 
         Destroy(gameObject);
     }

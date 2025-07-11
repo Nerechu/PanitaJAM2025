@@ -21,7 +21,8 @@ public enum SoundType
     BUTTONCLICK,
     VICTORY,
     DEFEAT,
-    DEATH
+    DEATH,
+    PLANTGROWTH
 }
 
 [RequireComponent(typeof(AudioSource)), ExecuteInEditMode]
@@ -65,6 +66,16 @@ public class AudioManager : MonoBehaviour
         AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
         instance.audioSource.PlayOneShot(randomClip, volume);
         
+        //audioSource.PlayOneShot(sound);
+    }
+
+    public void PlayDelayedSound(SoundType sound, float volume = 1, float delay = 0)
+    {
+        AudioClip[] clips = instance.soundList[(int)sound].Sounds;
+        AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
+        instance.audioSource.clip = randomClip;
+        instance.audioSource.PlayDelayed(delay);
+
         //audioSource.PlayOneShot(sound);
     }
 

@@ -51,6 +51,10 @@ public class PlantGun : MonoBehaviour
             {
                 Physics.IgnoreCollision(seedCollider, ownCollider);
             }
+
+            //Audio
+
+            AudioManager.instance.PlaySound(SoundType.FIRESEED);
         }
     }
 }
