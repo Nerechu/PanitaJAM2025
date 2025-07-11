@@ -1,0 +1,2 @@
+all the models uses vertex color and vertex color shader
+which is suitable for developing for low end devices.
