@@ -64,6 +64,9 @@ public class Dashing : MonoBehaviour
         delayedForceToApply = forceToApply;
         Invoke(nameof(DelayedDashForce), 0.025f);
         Invoke(nameof(ResetDash), dashDuration);
+
+            
+        AudioManager.instance.PlaySound(SoundType.DASH);
     }
 
     private void DelayedDashForce()

@@ -91,6 +91,20 @@ public class PlayerMovement : MonoBehaviour
             Jump();
             Invoke(nameof(ResetJump), jumpCooldown);
         }
+
+        if (state == MovementState.walking && (horizontalInput != 0 || verticalInput != 0))
+        {
+            if (!AudioManager.instance.audioSource.isPlaying)
+                AudioManager.instance.PlaySound(SoundType.WALK);
+        }
+
+        else if (state == MovementState.sprinting && (horizontalInput != 0 || verticalInput != 0))
+        {
+            if (!AudioManager.instance.audioSource.isPlaying)
+                AudioManager.instance.PlaySound(SoundType.RUN);
+        }
+
+
     }
 
     private void MovePlayer()
@@ -113,6 +127,11 @@ public class PlayerMovement : MonoBehaviour
         StopAllCoroutines();
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+
+        // Jump sound
+
+       AudioManager.instance.audioSource.Stop();
+       AudioManager.instance.PlaySound(SoundType.JUMP);
     }
 
     private void ResetJump() => readyToJump = true;

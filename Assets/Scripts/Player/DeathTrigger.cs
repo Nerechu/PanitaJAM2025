@@ -10,6 +10,10 @@ public class DeathTrigger : MonoBehaviour
         if (other.CompareTag("Player"))
         {
             CheckpointSystem.instance.Respawn();
+
+            //Audio 
+
+            AudioManager.instance.PlaySound(SoundType.DEATH);
         }
     }
 }

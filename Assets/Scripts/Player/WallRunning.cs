@@ -118,6 +118,8 @@ public class WallRunning : MonoBehaviour
         rb.useGravity = useGravity;
         wallRunTimer = maxWallRunTime;
         wallRemembered = false;
+
+
     }
 
     private void StopWallRun()
@@ -141,6 +143,9 @@ public class WallRunning : MonoBehaviour
         wallJumpsDone++;
         rb.velocity = new Vector3(rb.velocity.x, 0f, rb.velocity.z);
         rb.AddForce(forceToApply, ForceMode.Impulse);
+
+        //Audio
+        AudioManager.instance.PlaySound(SoundType.JUMP);
 
         RememberLastWall();
         StopWallRun();
@@ -167,6 +172,10 @@ public class WallRunning : MonoBehaviour
             RememberLastWall();
             wallRemembered = true;
         }
+
+        //Audio 
+        if (!AudioManager.instance.audioSource.isPlaying)
+            AudioManager.instance.PlaySound(SoundType.WALLRUN);
     }
 
     private void RememberLastWall()

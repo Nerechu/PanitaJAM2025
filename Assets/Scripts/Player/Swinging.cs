@@ -76,6 +76,10 @@ public class Swinging : MonoBehaviour
 
         bool hitSomething = Physics.Raycast(cam.position, cam.forward, out hit, maxSwingDistance);
 
+        //Audio disparo de gancho
+
+        AudioManager.instance.PlaySound(SoundType.FIREHOOK);
+
         if (hitSomething)
         {
             realHitPoint = hit.point;
@@ -100,6 +104,10 @@ public class Swinging : MonoBehaviour
                 joint.spring = spring;
                 joint.damper = damper;
                 joint.massScale = massScale;
+
+                //Audio de acierto
+
+                AudioManager.instance.PlaySound(SoundType.HOOKLANDED);
             }
             else
             {
@@ -112,6 +120,9 @@ public class Swinging : MonoBehaviour
 
                 Invoke(nameof(StopSwing), 0.2f);
 
+                //Audio de fallo
+
+                AudioManager.instance.PlaySound(SoundType.HOOKMISSED);
             }
         }
         else
@@ -126,6 +137,8 @@ public class Swinging : MonoBehaviour
             }
 
             Invoke(nameof(StopSwing), 0.05f);  // También mostrar brevemente
+
+            
         }
     }
 
@@ -152,6 +165,10 @@ public class Swinging : MonoBehaviour
         {
             Destroy(joint);
         }
+
+        //Audio release de gancho
+
+        AudioManager.instance.PlaySound(SoundType.HOOKRELEASE);
     }
 
     private void OdmGearMovement()
