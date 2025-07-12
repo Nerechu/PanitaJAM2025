@@ -33,6 +33,7 @@ public class Swinging : MonoBehaviour
     public GameObject hookFailEffectPrefab;
     public Transform grappleGunModel;
     public Vector3 recoilOffset = new Vector3(0, -0.1f, -0.2f);
+    public AnimationCurve affectCurve;
 
     private Vector3 swingPoint;
     private Vector3 realHitPoint;
