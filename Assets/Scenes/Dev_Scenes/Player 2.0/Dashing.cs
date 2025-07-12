@@ -1,4 +1,4 @@
-// === Optimized Dashing.cs ===
+using ParkourFPS;
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
@@ -9,6 +9,7 @@ public class Dashing : MonoBehaviour
     public Transform playerCam;
     private Rigidbody rb;
     private PlayerMovement pm;
+    private PlayerControllerScript controller;
 
     [Header("Dashing Settings")]
     public float dashForce = 20f;
@@ -34,6 +35,7 @@ public class Dashing : MonoBehaviour
     {
         rb = GetComponent<Rigidbody>();
         pm = GetComponent<PlayerMovement>();
+        controller = GetComponent<PlayerControllerScript>();
 
         if (playerCam == null)
             playerCam = Camera.main?.transform;
@@ -54,6 +56,8 @@ public class Dashing : MonoBehaviour
 
         dashCooldownTimer = dashCooldown;
         pm.dashing = true;
+
+        controller?.SetSpeedLines(true); // Activar SpeedLines
 
         Transform refTransform = useCameraForward ? playerCam : transform;
         Vector3 dir = GetDashDirection(refTransform);
@@ -81,6 +85,8 @@ public class Dashing : MonoBehaviour
     {
         pm.dashing = false;
         if (disableGravity) rb.useGravity = true;
+
+        controller?.SetSpeedLines(false); // Desactivar SpeedLines
     }
 
     private Vector3 GetDashDirection(Transform reference)

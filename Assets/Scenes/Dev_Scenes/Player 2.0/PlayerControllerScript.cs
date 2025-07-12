@@ -20,7 +20,7 @@ namespace ParkourFPS
 
         [Header("Camera")]
         [SerializeField] private Transform cameraTransform;
-        [SerializeField] private GameObject speedLines;
+        [SerializeField] private GameObject speedLines; // Particle System GameObject
         [SerializeField] private float fieldOfView = 80;
         [SerializeField] private float lookSensitivity = 2;
         private Camera cameraComponent;
@@ -237,10 +237,22 @@ namespace ParkourFPS
         private IEnumerator Slide()
         {
             isSliding = true;
+
+            SetSpeedLines(true); // Activar SpeedLines
+
             if (slideMomentumIncrease != 0) momentum += slideMomentumIncrease;
             soundPlayer.PlaySound(soundPlayer.slidingSound);
             yield return new WaitForSeconds(slideDuration);
+
             isSliding = false;
+
+            SetSpeedLines(false); // Desactivar SpeedLines
+        }
+
+        public void SetSpeedLines(bool enabled)
+        {
+            if (speedLines != null)
+                speedLines.SetActive(enabled);
         }
 
         private void SetRotation()

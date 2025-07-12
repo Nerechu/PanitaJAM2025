@@ -732,37 +732,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1549947705}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1546189618
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1546189619}
-  m_Layer: 0
-  m_Name: 60FPS
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &1546189619
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1546189618}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -5.679251, y: 14.748607, z: -0.8172882}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1549947704
 GameObject:
   m_ObjectHideFlags: 0
@@ -7147,6 +7116,8 @@ MonoBehaviour:
   extendCableSpeed: 100
   swingKey: 324
   hookFailEffectPrefab: {fileID: 1042412746}
+  grappleGunModel: {fileID: 0}
+  recoilOffset: {x: 0, y: -0.1, z: -0.2}
 --- !u!114 &8700467336767190719
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -7370,4 +7341,3 @@ SceneRoots:
   - {fileID: 2102117768}
   - {fileID: 2034769997}
   - {fileID: 508532546347251001}
-  - {fileID: 1546189619}
