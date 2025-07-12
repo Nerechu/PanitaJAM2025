@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections; // ← Necesario para IEnumerator (corutinas)
 
 public class PlantGun : MonoBehaviour
 {
@@ -14,6 +15,21 @@ public class PlantGun : MonoBehaviour
 
     [Header("Feedback visual")]
     public GameObject impactParticlePrefab;
+
+    [Header("Animación de Retroceso")]
+    public Transform gunModel;
+    public Vector3 recoilOffset = new Vector3(0, -0.1f, -0.2f);
+    private Vector3 originalGunPosition;
+
+    [Header("Audio")]
+    public AudioSource audioSource;
+    public AudioClip shootClip;
+
+    void Awake()
+    {
+        if (gunModel != null)
+            originalGunPosition = gunModel.localPosition;
+    }
 
     void Update()
     {
@@ -57,7 +73,44 @@ public class PlantGun : MonoBehaviour
             }
         }
 
+        // Reproducir animación de retroceso
+        if (gunModel != null)
+        {
+            StopAllCoroutines();
+            StartCoroutine(PlayRecoil());
+        }
+
+        // Reproducir sonido de disparo
+        if (audioSource != null && shootClip != null)
+        {
+            audioSource.pitch = Random.Range(0.95f, 1.05f);
+            audioSource.PlayOneShot(shootClip);
+        }
+
         // Debug opcional (visible en escena)
         Debug.DrawRay(shotOrigin.position, fpsCamera.transform.forward * 10, Color.red, 2f);
+    }
+
+    private IEnumerator PlayRecoil()
+    {
+        Vector3 target = originalGunPosition + recoilOffset;
+        float t = 0f;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 10f;
+            gunModel.localPosition = Vector3.Lerp(originalGunPosition, target, t);
+            yield return null;
+        }
+
+        t = 0f;
+        while (t < 1f)
+        {
+            t += Time.deltaTime * 6f;
+            gunModel.localPosition = Vector3.Lerp(target, originalGunPosition, t);
+            yield return null;
+        }
+
+        gunModel.localPosition = originalGunPosition;
     }
 }
