@@ -17,4 +17,13 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/FinalCredits.unity
     guid: 7c5a40b02b904b04bad461cae3ba8516
+  - enabled: 1
+    path: Assets/Scenes/Lose.unity
+    guid: c3d0dfd9c95b5714bbd3f0e9c490957a
+  - enabled: 1
+    path: Assets/Scenes/Dev_Scenes/xPKeh's Scene.unity
+    guid: 3397748581e6a6744b18ef92e9f838ed
+  - enabled: 1
+    path: Assets/Scenes/Win.unity
+    guid: 1b63ee4b088a4d342a93388701b9455e
   m_configObjects: {}
