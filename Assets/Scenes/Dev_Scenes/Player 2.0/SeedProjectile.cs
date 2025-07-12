@@ -1,5 +1,6 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Rigidbody), typeof(Collider))]
 public class SeedProjectile : MonoBehaviour
 {
     public GameObject impactParticlePrefab;
@@ -10,7 +11,7 @@ public class SeedProjectile : MonoBehaviour
 
     private void Start()
     {
-        // Destruye el proyectil automáticamente después de 2 segundos si no impacta
+        // Autodestruir después de 2 segundos si no impacta
         Destroy(gameObject, 2f);
     }
 
@@ -28,7 +29,7 @@ public class SeedProjectile : MonoBehaviour
             Destroy(impact, 2f);
         }
 
-        // Verificar si impactó contra capa vegetal
+        // Si impacta contra capa vegetal
         if (((1 << collision.gameObject.layer) & plantLayer) != 0)
         {
             ivySystem.createIvy(contact.point, contact.normal);
