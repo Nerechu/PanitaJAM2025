@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: ba9c10c4ff932204fbe0b12a1156dc10
+guid: 8fa02ae185176834da55a138ac7b0e90
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -110,13 +110,13 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: Opcion_sin_selccionar_full_screen_0
+      name: Barra_sin_desplegar_claraa_0
       rect:
         serializedVersion: 2
-        x: 4378
-        y: 2416
-        width: 318
-        height: 270
+        x: 3966
+        y: 2443
+        width: 1139
+        height: 216
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
@@ -124,8 +124,8 @@ TextureImporter:
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: ef4bbf009e8f1504cb92ca816fad5c67
-      internalID: 1891631749
+      spriteID: e172932d60055b14e98fb82e53eee8f8
+      internalID: -1161278541
       vertices: []
       indices: 
       edges: []
@@ -133,7 +133,7 @@ TextureImporter:
     outline: []
     physicsShape: []
     bones: []
-    spriteID: c569f615a3100414798cab92da0d392f
+    spriteID: 7b21d86ab7f865642ada928b55582ff8
     internalID: 0
     vertices: []
     indices: 
@@ -141,7 +141,7 @@ TextureImporter:
     weights: []
     secondaryTextures: []
     nameFileIdTable:
-      Opcion_sin_selccionar_full_screen_0: 1891631749
+      Barra_sin_desplegar_claraa_0: -1161278541
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
