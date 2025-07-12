@@ -20,7 +20,7 @@ namespace ParkourFPS
 
         [Header("Camera")]
         [SerializeField] private Transform cameraTransform;
-        [SerializeField] private GameObject speedLines; // Particle System GameObject
+        [SerializeField] private GameObject speedLines;
         [SerializeField] private float fieldOfView = 80;
         [SerializeField] private float lookSensitivity = 2;
         private Camera cameraComponent;
@@ -90,7 +90,8 @@ namespace ParkourFPS
         [Header("Gravity & Drag")]
         [SerializeField] private float groundDrag = 5;
         [SerializeField] private float airDrag = 5;
-        [SerializeField] private float gravity = 100;
+        [SerializeField] private float gravity = 400; // Aumentado para caídas más rápidas
+        [SerializeField] private float fallMultiplier = 1.5f;
 
         [Header("Ground & Wall Check")]
         [SerializeField] private LayerMask groundMask;
@@ -113,7 +114,7 @@ namespace ParkourFPS
             cameraComponent = cameraTransform.GetComponent<Camera>();
 
             cameraComponent.fieldOfView = fieldOfView;
-            Physics.gravity = new Vector3(0, -gravity, 0);
+            playerRigidbody.useGravity = false;
 
             if (staminaEnabled) StartCoroutine(ControlStamina());
             else if (staminaText) staminaText.gameObject.SetActive(false);
@@ -140,8 +141,27 @@ namespace ParkourFPS
             SetFov();
             SetPlayerHeight();
 
+            ApplyCustomGravity();
+
             if (!(playerMovement.dashing || playerMovement.climbing || playerMovement.swinging))
                 MovePlayer();
+        }
+
+        private void ApplyCustomGravity()
+        {
+            if (isWallrunning)
+            {
+                playerRigidbody.AddForce(Vector3.down * wallRunGravityReduction, ForceMode.Acceleration);
+            }
+            else if (!isGrounded)
+            {
+                float adjustedGravity = gravity;
+
+                if (playerRigidbody.velocity.y < 0)
+                    adjustedGravity *= fallMultiplier;
+
+                playerRigidbody.AddForce(Vector3.down * adjustedGravity, ForceMode.Acceleration);
+            }
         }
 
         private void MovePlayer()
@@ -152,7 +172,6 @@ namespace ParkourFPS
             if (wallrunningEnabled && !isGrounded && (touchingWallRight || touchingWallLeft) && v > 0)
             {
                 isWallrunning = true;
-                Physics.gravity = new Vector3(0, wallRunGravityReduction - gravity, 0);
                 momentum += wallRunMomentumIncrease;
                 v = 1;
                 h *= 0.3f;
@@ -160,7 +179,6 @@ namespace ParkourFPS
             else
             {
                 isWallrunning = false;
-                Physics.gravity = new Vector3(0, -gravity, 0);
             }
 
             if (!isWallrunning && ((touchingWallRight && h > 0) || (touchingWallLeft && h < 0)))
@@ -237,16 +255,12 @@ namespace ParkourFPS
         private IEnumerator Slide()
         {
             isSliding = true;
-
-            SetSpeedLines(true); // Activar SpeedLines
-
+            SetSpeedLines(true);
             if (slideMomentumIncrease != 0) momentum += slideMomentumIncrease;
             soundPlayer.PlaySound(soundPlayer.slidingSound);
             yield return new WaitForSeconds(slideDuration);
-
             isSliding = false;
-
-            SetSpeedLines(false); // Desactivar SpeedLines
+            SetSpeedLines(false);
         }
 
         public void SetSpeedLines(bool enabled)
