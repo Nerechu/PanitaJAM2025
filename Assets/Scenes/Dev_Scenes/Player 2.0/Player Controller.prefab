@@ -5445,7 +5445,7 @@ MonoBehaviour:
   gravity: 100
   groundMask:
     serializedVersion: 2
-    m_Bits: 8
+    m_Bits: 0
   groundCheck: {fileID: 3381493096388817736}
   wallCheckRight: {fileID: 2187529436626301022}
   wallCheckLeft: {fileID: 3558636116839912963}
