@@ -9,7 +9,7 @@ public class Play : MonoBehaviour
     [SerializeField] private Image background;
     public void PlayGame()
     {
-        SceneManager.LoadScene("Tutorial");
+        SceneManager.LoadScene("Lvl1");
     }
 
     public void QuitGame()

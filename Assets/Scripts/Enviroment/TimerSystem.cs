@@ -8,7 +8,7 @@ using UnityEngine.SceneManagement;
 public class TimerSystem : MonoBehaviour
 {
     [SerializeField] private TextMeshProUGUI timerText;
-    public float remainingTime = 300f;
+    public float remainingTime = 5f;
     public static TimerSystem instance;
 
     private void Awake()

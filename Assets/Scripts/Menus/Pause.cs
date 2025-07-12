@@ -10,6 +10,7 @@ public class Pause : MonoBehaviour
     public enum stateGame { STOP = 0, CONTINUE = 1 };
     public stateGame currentState = stateGame.CONTINUE;
 
+    public GameObject HUD;
     public AudioSource music;
     
     public Slider volumeMusicSlider;
@@ -46,7 +47,8 @@ public class Pause : MonoBehaviour
     {
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
         currentState = stateGame.STOP;
-        Time.timeScale = 0; 
+        Time.timeScale = 0;
+        HUD.SetActive(false);
         if (music != null)
         {
             music.Pause(); 
@@ -58,7 +60,8 @@ public class Pause : MonoBehaviour
         this.gameObject.transform.GetChild(0).gameObject.SetActive(false);
 
         currentState = stateGame.CONTINUE;
-        Time.timeScale = 1; 
+        Time.timeScale = 1;
+        HUD.SetActive(true);
         if (music != null)
         {
             music.Play(); 
