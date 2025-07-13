@@ -235,11 +235,17 @@ namespace ParkourFPS
             {
                 isRunning = true;
                 isCrouching = false;
+
+                if (!AudioManager.instance.audioSource.isPlaying && Mathf.Abs(playerRigidbody.velocity.magnitude) > 0.5f)
+                    AudioManager.instance.PlaySound(SoundType.RUN);
             }
             else
             {
                 isRunning = false;
                 isCrouching = Input.GetKey(crouchButton);
+
+                if (!AudioManager.instance.audioSource.isPlaying && Mathf.Abs(playerRigidbody.velocity.magnitude) > 0.5f)
+                    AudioManager.instance.PlaySound(SoundType.WALK);
             }
 
             if (Input.GetKeyDown(jumpButton) && jumpingEnabled)
@@ -270,7 +276,10 @@ namespace ParkourFPS
                 isWallrunning = false;
                 SetSpeedLines(false);
 
-                soundPlayer.PlaySound(soundPlayer.jumpSound, volume: 0.6f);
+                //soundPlayer.PlaySound(soundPlayer.jumpSound, volume: 0.6f);
+                // Jump sound
+
+                AudioManager.instance.PlaySound(SoundType.JUMP);
             }
         }
 
@@ -279,7 +288,7 @@ namespace ParkourFPS
             isSliding = true;
             SetSpeedLines(true);
             if (slideMomentumIncrease != 0) momentum += slideMomentumIncrease;
-            soundPlayer.PlaySound(soundPlayer.slidingSound);
+            //soundPlayer.PlaySound(soundPlayer.slidingSound);
             yield return new WaitForSeconds(slideDuration);
             isSliding = false;
             SetSpeedLines(false);

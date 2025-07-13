@@ -56,7 +56,11 @@ public class Swinging : MonoBehaviour
     }
 
     private void TryStartGrapple()
-    {
+    {            
+        //Audio disparo de gancho
+
+        AudioManager.instance.PlaySound(SoundType.FIREHOOK);
+        
         RaycastHit hit;
         if (Physics.Raycast(cam.position, cam.forward, out hit, maxDistance, grappleMask))
         {
@@ -65,9 +69,17 @@ public class Swinging : MonoBehaviour
             isGrappling = true;
             cooldownTimer = grappleCooldown;
 
+            //Audio de acierto
+
+            AudioManager.instance.PlayDelayedSound(SoundType.HOOKLANDED, 1, 0.5f);
+
             pm.swinging = true; // si querés bloquear input en el aire
             SetupLine();
         }
+
+        //Audio de fallo con volumen default 1 y 0,75 sec de delay
+
+        else AudioManager.instance.PlayDelayedSound(SoundType.HOOKMISSED, 1, 0.75f);
     }
 
     private void EndGrapple()
@@ -85,6 +97,10 @@ public class Swinging : MonoBehaviour
         // Impulso extra al soltarse
         Vector3 launchDir = (grapplePoint - transform.position).normalized + Vector3.up * 0.5f;
         rb.velocity = launchDir * boostSpeed;
+
+        //Audio release de gancho
+
+        AudioManager.instance.PlaySound(SoundType.HOOKRELEASE);
     }
 
     private void SetupLine()

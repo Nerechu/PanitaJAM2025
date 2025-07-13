@@ -79,6 +79,10 @@ public class Dashing : MonoBehaviour
         }
 
         rb.AddForce(delayedForceToApply, ForceMode.Impulse);
+
+        //Audio
+
+        AudioManager.instance.PlaySound(SoundType.DASH);
     }
 
     private void ResetDash()
