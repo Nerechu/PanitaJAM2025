@@ -1,214 +1,110 @@
-﻿// === Optimized and Corrected Swinging.cs ===
-using UnityEngine;
-using System.Collections;
+﻿using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
 public class Swinging : MonoBehaviour
 {
     [Header("References")]
-    public Transform gunTip;
     public Transform cam;
+    public Transform gunTip;
     public Rigidbody rb;
-    public LayerMask whatIsGrappleable;
+    public LayerMask grappleMask;
 
-    private PlayerMovement pm;
-    private LineRenderer lr;
-    private SpringJoint joint;
-
-    [Header("Swinging Settings")]
-    public float maxSwingDistance = 25f;
-    public float spring = 4.5f;
-    public float damper = 7f;
-    public float massScale = 4.5f;
-
-    [Header("Movement")]
-    public float horizontalThrustForce = 10f;
-    public float forwardThrustForce = 15f;
-    public float extendCableSpeed = 2f;
+    [Header("Grapple Settings")]
+    public float maxDistance = 50f;
+    public float boostSpeed = 75f;
+    public float stopDistance = 3f;
+    public float grappleCooldown = 1f;
 
     [Header("Input")]
-    public KeyCode swingKey = KeyCode.Mouse1;
+    public KeyCode grappleKey = KeyCode.Mouse1;
 
-    [Header("Effects")]
-    public GameObject hookFailEffectPrefab;
-    public Transform grappleGunModel;
-    public Vector3 recoilOffset = new Vector3(0, -0.1f, -0.2f);
-    public AnimationCurve affectCurve;
+    [Header("Visual")]
+    public LineRenderer lineRenderer;
 
-    private Vector3 swingPoint;
-    private Vector3 realHitPoint;
-    private Vector3 currentGrapplePosition;
-    private Vector3 originalGunPosition;
-    private bool isAttemptingSwing;
+    private Vector3 grapplePoint;
+    private bool isGrappling;
+    private bool isFlying;
+    private float cooldownTimer;
+
+    private PlayerMovement pm;
 
     private void Awake()
     {
         pm = GetComponent<PlayerMovement>();
-        if (cam == null)
-            cam = Camera.main?.transform;
-
-        if (grappleGunModel != null)
-            originalGunPosition = grappleGunModel.localPosition;
+        if (cam == null) cam = Camera.main?.transform;
     }
 
     private void Update()
     {
-        if (Input.GetKeyDown(swingKey)) AttemptSwing();
-        if (Input.GetKeyUp(swingKey)) StopSwing();
+        cooldownTimer -= Time.deltaTime;
 
-        if (isAttemptingSwing && joint == null)
-            UpdateRopeToMouseDirection();
+        if (Input.GetKeyDown(grappleKey) && cooldownTimer <= 0f)
+            TryStartGrapple();
 
-        if (joint != null)
-            ApplyOdmGearMovement();
+        if (isFlying)
+        {
+            Vector3 dir = (grapplePoint - transform.position).normalized;
+            rb.velocity = dir * boostSpeed;
+
+            float distance = Vector3.Distance(transform.position, grapplePoint);
+            if (distance < stopDistance || Input.GetKeyUp(grappleKey))
+                EndGrapple();
+        }
+
+        if (isGrappling)
+            UpdateRope();
     }
 
-    private void LateUpdate()
+    private void TryStartGrapple()
     {
-        DrawRope();
-    }
-
-    private void AttemptSwing()
-    {
-        if (gunTip == null || cam == null) return;
-
         RaycastHit hit;
-        currentGrapplePosition = gunTip.position;
-        SetupLineRenderer();
-
-        bool hitSomething = Physics.Raycast(cam.position, cam.forward, out hit, maxSwingDistance);
-        realHitPoint = hitSomething ? hit.point : cam.position + cam.forward * maxSwingDistance;
-        isAttemptingSwing = true;
-
-        if (grappleGunModel != null)
+        if (Physics.Raycast(cam.position, cam.forward, out hit, maxDistance, grappleMask))
         {
-            StopAllCoroutines();
-            StartCoroutine(PlayGrappleRecoil());
-        }
+            grapplePoint = hit.point;
+            isFlying = true;
+            isGrappling = true;
+            cooldownTimer = grappleCooldown;
 
-        if (hitSomething && ((1 << hit.collider.gameObject.layer) & whatIsGrappleable) != 0)
-        {
-            swingPoint = hit.point;
-            pm.swinging = true;
-
-            joint = gameObject.AddComponent<SpringJoint>();
-            joint.autoConfigureConnectedAnchor = false;
-            joint.connectedAnchor = swingPoint;
-
-            float dist = Vector3.Distance(transform.position, swingPoint);
-            joint.maxDistance = dist * 0.8f;
-            joint.minDistance = dist * 0.25f;
-
-            joint.spring = spring;
-            joint.damper = damper;
-            joint.massScale = massScale;
-        }
-        else if (hitSomething && hookFailEffectPrefab)
-        {
-            Instantiate(hookFailEffectPrefab, hit.point, Quaternion.LookRotation(-cam.forward));
-            Invoke(nameof(StopSwing), 0.2f);
-        }
-        else
-        {
-            Invoke(nameof(StopSwing), 0.2f);
+            pm.swinging = true; // si querés bloquear input en el aire
+            SetupLine();
         }
     }
 
-    private IEnumerator PlayGrappleRecoil()
+    private void EndGrapple()
     {
-        Vector3 target = originalGunPosition + recoilOffset;
-        float t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * 10f;
-            grappleGunModel.localPosition = Vector3.Lerp(originalGunPosition, target, t);
-            yield return null;
-        }
-
-        t = 0f;
-        while (t < 1f)
-        {
-            t += Time.deltaTime * 6f;
-            grappleGunModel.localPosition = Vector3.Lerp(target, originalGunPosition, t);
-            yield return null;
-        }
-
-        grappleGunModel.localPosition = originalGunPosition;
-    }
-
-    public void StopSwing()
-    {
-        isAttemptingSwing = false;
+        isFlying = false;
+        isGrappling = false;
         pm.swinging = false;
 
-        if (joint) Destroy(joint);
-        if (lr)
+        if (lineRenderer)
         {
-            lr.positionCount = 0;
-            Destroy(lr.gameObject);
-            lr = null;
+            lineRenderer.positionCount = 0;
+            lineRenderer.enabled = false;
         }
+
+        // Impulso extra al soltarse
+        Vector3 launchDir = (grapplePoint - transform.position).normalized + Vector3.up * 0.5f;
+        rb.velocity = launchDir * boostSpeed;
     }
 
-    private void ApplyOdmGearMovement()
+    private void SetupLine()
     {
-        if (Input.GetKey(KeyCode.D)) rb.AddForce(transform.right * horizontalThrustForce, ForceMode.Acceleration);
-        if (Input.GetKey(KeyCode.A)) rb.AddForce(-transform.right * horizontalThrustForce, ForceMode.Acceleration);
-        if (Input.GetKey(KeyCode.W)) rb.AddForce(transform.forward * horizontalThrustForce, ForceMode.Acceleration);
-
-        if (Input.GetKey(KeyCode.Space))
+        if (lineRenderer == null)
         {
-            Vector3 dir = swingPoint - transform.position;
-            rb.AddForce(dir.normalized * forwardThrustForce, ForceMode.Acceleration);
-
-            float dist = Vector3.Distance(transform.position, swingPoint);
-            joint.maxDistance = dist * 0.8f;
-            joint.minDistance = dist * 0.25f;
+            GameObject obj = new GameObject("GrappleLine");
+            lineRenderer = obj.AddComponent<LineRenderer>();
+            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
+            lineRenderer.widthMultiplier = 0.05f;
         }
 
-        if (Input.GetKey(KeyCode.S))
-        {
-            float dist = Vector3.Distance(transform.position, swingPoint) + extendCableSpeed;
-            joint.maxDistance = dist * 0.8f;
-            joint.minDistance = dist * 0.25f;
-        }
+        lineRenderer.positionCount = 2;
+        lineRenderer.enabled = true;
     }
 
-    private void DrawRope()
+    private void UpdateRope()
     {
-        if (!isAttemptingSwing || lr == null) return;
-
-        if (joint != null)
-        {
-            currentGrapplePosition = Vector3.Lerp(currentGrapplePosition, swingPoint, Time.deltaTime * 8f);
-            lr.SetPosition(0, gunTip.position);
-            lr.SetPosition(1, currentGrapplePosition);
-        }
-        else
-        {
-            lr.SetPosition(0, gunTip.position);
-            lr.SetPosition(1, realHitPoint);
-        }
-    }
-
-    private void SetupLineRenderer()
-    {
-        if (lr != null) return;
-
-        GameObject lrObj = new GameObject("GrappleLine");
-        lr = lrObj.AddComponent<LineRenderer>();
-        lr.material = new Material(Shader.Find("Sprites/Default"));
-        lr.startWidth = 0.05f;
-        lr.endWidth = 0.05f;
-        lr.numCapVertices = 8;
-        lr.positionCount = 2;
-    }
-
-    private void UpdateRopeToMouseDirection()
-    {
-        if (lr == null || cam == null || gunTip == null) return;
-        realHitPoint = cam.position + cam.forward * maxSwingDistance;
-        lr.SetPosition(0, gunTip.position);
-        lr.SetPosition(1, realHitPoint);
+        if (!lineRenderer || !gunTip) return;
+        lineRenderer.SetPosition(0, gunTip.position);
+        lineRenderer.SetPosition(1, grapplePoint);
     }
 }

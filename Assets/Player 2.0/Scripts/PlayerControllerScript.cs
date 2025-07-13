@@ -1,5 +1,4 @@
-﻿// === PlayerControllerScript.cs ===
-using System.Collections;
+﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,92 +15,104 @@ namespace ParkourFPS
         private Rigidbody playerRigidbody;
         private SoundPlayer soundPlayer;
         private PlayerMovement playerMovement;
+        private Camera cameraComponent;
         #endregion
 
+        #region Camera
         [Header("Camera")]
         [SerializeField] private Transform cameraTransform;
         [SerializeField] private GameObject speedLines;
         [SerializeField] private float fieldOfView = 80;
         [SerializeField] private float lookSensitivity = 2;
-        private Camera cameraComponent;
-        private static float lookXLimit = 45;
         private float currRotationX = 0;
-        private int currentCameraLean = 0;
+        private const float lookXLimit = 45;
+        #endregion
 
+        #region Movement Speeds
         [Header("Walking")]
-        [SerializeField] private bool slopeSpeedDecrease = false;
         [SerializeField] private float walkSpeed = 100;
         [SerializeField] private float airMultiplier = 1.1f;
+        [SerializeField] private bool slopeSpeedDecrease = false;
 
         [Header("Running")]
         [SerializeField] private bool runningEnabled = true;
         [SerializeField] private KeyCode runButton = KeyCode.LeftShift;
         [SerializeField] private float runSpeed = 130;
         [SerializeField] private float runFovIncrease = 10;
-        private bool isRunning = false;
+        private bool isRunning;
 
-        [Header("Stamina")]
-        [SerializeField] private bool staminaEnabled = true;
-        [SerializeField] private Text staminaText;
-        [SerializeField] private float staminaDuration = 10;
-        [SerializeField] private float staminaCooldown = 3;
-        [SerializeField] private float staminaFillRate = 2;
-        private float currStamina;
-        private bool staminaEmpty;
-
-        [Header("Crouching")]
+        [Header("Crouch & Slide")]
         [SerializeField] private bool crouchingEnabled = true;
         [SerializeField] private KeyCode crouchButton = KeyCode.LeftControl;
         [SerializeField] private float crouchSpeed = 80;
-        private bool isCrouching;
-        private bool changedPlayerHeight;
-
-        [Header("Sliding")]
         [SerializeField] private bool slidingEnabled = true;
         [SerializeField] private KeyCode slideButton = KeyCode.C;
         [SerializeField] private float slideDuration = 0.5f;
         [SerializeField] private float slideFovIncrease = 3;
         private bool isSliding;
+        private bool isCrouching;
+        private bool changedPlayerHeight;
+        #endregion
 
+        #region Jumping
         [Header("Jumping")]
         [SerializeField] private bool jumpingEnabled = true;
         [SerializeField] private KeyCode jumpButton = KeyCode.Space;
         [SerializeField] private float jumpAmount = 80;
-        private static float jumpBufferTime = 0.2f;
-        private float lastJumpTime = 0f;
-        private float jumpTryTime = 0f;
+        #endregion
 
+        #region Wallrunning
         [Header("Wallrunning")]
         [SerializeField] private bool wallrunningEnabled = true;
-        [SerializeField] private float wallRunGravityReduction = 70f;
-        [SerializeField] private int wallRunCameraLean = 10;
-        private bool isWallrunning = false;
+        [SerializeField] private float wallRunGravityBoost = 120f;
+        [SerializeField] private float wallRunForwardBoost = 30f;
+        [SerializeField] private float maxWallRunTime = 2f;
+        [SerializeField] private int wallRunCameraLean = 15;
+        private bool isWallrunning;
+        private float wallRunTimer;
+        #endregion
 
+        #region Momentum
         [Header("Momentum")]
         [SerializeField] private bool useMomentum = true;
         [SerializeField] private Text momentumText;
-        [SerializeField] private float momentumResetThreshold = 5;
-        [SerializeField] private float momentumDecreaseRate = 0.01f;
-        [SerializeField] private float runMomentumIncrease = 0.001f;
+        [SerializeField] private float momentumResetThreshold = 3f;
+        [SerializeField] private float momentumDecreaseRate = 0.015f;
+        [SerializeField] private float runMomentumIncrease = 0.002f;
         [SerializeField] private float slideMomentumIncrease = 0.2f;
-        [SerializeField] private float wallRunMomentumIncrease = 0.005f;
-        private float momentum = 1;
+        [SerializeField] private float wallRunMomentumIncrease = 0.01f;
+        private float momentum = 1f;
+        #endregion
 
+        #region Stamina
+        [Header("Stamina")]
+        [SerializeField] private bool staminaEnabled = true;
+        [SerializeField] private Text staminaText;
+        [SerializeField] private float staminaDuration = 10;
+        [SerializeField] private float staminaFillRate = 2;
+        private float currStamina;
+        private bool staminaEmpty;
+        #endregion
+
+        #region Gravity & Drag
         [Header("Gravity & Drag")]
+        [SerializeField] private float gravity = 400;
+        [SerializeField] private float fallMultiplier = 1.5f;
         [SerializeField] private float groundDrag = 5;
         [SerializeField] private float airDrag = 5;
-        [SerializeField] private float gravity = 400; // Aumentado para caídas más rápidas
-        [SerializeField] private float fallMultiplier = 1.5f;
+        #endregion
 
+        #region Ground & Wall Check
         [Header("Ground & Wall Check")]
         [SerializeField] private LayerMask groundMask;
         [SerializeField] private Transform groundCheck;
         [SerializeField] private Transform wallCheckRight;
         [SerializeField] private Transform wallCheckLeft;
-        private static float groundDistance = 0.4f;
+        private const float groundDistance = 0.4f;
         private bool isGrounded;
-        private RaycastHit slopeHit;
         private bool touchingWallRight, touchingWallLeft;
+        private RaycastHit slopeHit;
+        #endregion
 
         public bool IsGrounded() => isGrounded;
 
@@ -117,30 +128,40 @@ namespace ParkourFPS
             playerRigidbody.useGravity = false;
 
             if (staminaEnabled) StartCoroutine(ControlStamina());
-            else if (staminaText) staminaText.gameObject.SetActive(false);
-
             if (useMomentum)
             {
                 StartCoroutine(ReduceMomentum());
                 StartCoroutine(CheckMomentumReset());
             }
-            else if (momentumText) momentumText.gameObject.SetActive(false);
         }
 
         private void Update()
         {
             SetRotation();
             HandleInput();
+
+            if (isWallrunning)
+            {
+                wallRunTimer += Time.deltaTime;
+                if (wallRunTimer >= maxWallRunTime)
+                {
+                    isWallrunning = false;
+                    SetSpeedLines(false);
+                }
+            }
+            else
+            {
+                wallRunTimer = 0f;
+            }
         }
 
         private void FixedUpdate()
         {
-            CheckWallStatus();
             CheckGrounded();
+            CheckWallStatus();
             SetDrag();
             SetFov();
             SetPlayerHeight();
-
             ApplyCustomGravity();
 
             if (!(playerMovement.dashing || playerMovement.climbing || playerMovement.swinging))
@@ -151,15 +172,14 @@ namespace ParkourFPS
         {
             if (isWallrunning)
             {
-                playerRigidbody.AddForce(Vector3.down * wallRunGravityReduction, ForceMode.Acceleration);
+                playerRigidbody.AddForce(Vector3.up * wallRunGravityBoost, ForceMode.Acceleration);
+                playerRigidbody.AddForce(transform.forward * wallRunForwardBoost, ForceMode.Acceleration);
             }
             else if (!isGrounded)
             {
                 float adjustedGravity = gravity;
-
                 if (playerRigidbody.velocity.y < 0)
                     adjustedGravity *= fallMultiplier;
-
                 playerRigidbody.AddForce(Vector3.down * adjustedGravity, ForceMode.Acceleration);
             }
         }
@@ -169,16 +189,17 @@ namespace ParkourFPS
             float h = Input.GetAxisRaw("Horizontal");
             float v = Input.GetAxisRaw("Vertical");
 
-            if (wallrunningEnabled && !isGrounded && (touchingWallRight || touchingWallLeft) && v > 0)
+            if (CanWallRun())
             {
                 isWallrunning = true;
+                SetSpeedLines(true);
                 momentum += wallRunMomentumIncrease;
-                v = 1;
                 h *= 0.3f;
             }
             else
             {
                 isWallrunning = false;
+                SetSpeedLines(false);
             }
 
             if (!isWallrunning && ((touchingWallRight && h > 0) || (touchingWallLeft && h < 0)))
@@ -247,6 +268,7 @@ namespace ParkourFPS
 
                 isGrounded = false;
                 isWallrunning = false;
+                SetSpeedLines(false);
 
                 soundPlayer.PlaySound(soundPlayer.jumpSound, volume: 0.6f);
             }
@@ -273,7 +295,8 @@ namespace ParkourFPS
         {
             currRotationX -= Input.GetAxis("Mouse Y") * lookSensitivity;
             currRotationX = Mathf.Clamp(currRotationX, -lookXLimit, lookXLimit);
-            cameraTransform.localRotation = Quaternion.Euler(currRotationX, 0, isWallrunning ? wallRunCameraLean * (touchingWallLeft ? -1 : 1) : 0);
+            float lean = isWallrunning ? wallRunCameraLean * (touchingWallLeft ? -1 : 1) : 0;
+            cameraTransform.localRotation = Quaternion.Euler(currRotationX, 0, lean);
             transform.Rotate(0, Input.GetAxis("Mouse X") * lookSensitivity, 0);
         }
 
@@ -292,17 +315,14 @@ namespace ParkourFPS
 
         private void SetPlayerHeight()
         {
-            if (isSliding || isCrouching)
+            if ((isSliding || isCrouching) && !changedPlayerHeight)
             {
-                if (!changedPlayerHeight)
-                {
-                    capsuleCollider.height /= 2f;
-                    capsuleCollider.center -= new Vector3(0, capsuleCollider.height / 2f, 0);
-                    cameraTransform.localPosition /= 4f;
-                    changedPlayerHeight = true;
-                }
+                capsuleCollider.height /= 2f;
+                capsuleCollider.center -= new Vector3(0, capsuleCollider.height / 2f, 0);
+                cameraTransform.localPosition /= 4f;
+                changedPlayerHeight = true;
             }
-            else if (changedPlayerHeight)
+            else if (!(isSliding || isCrouching) && changedPlayerHeight)
             {
                 capsuleCollider.center += new Vector3(0, capsuleCollider.height / 2f, 0);
                 capsuleCollider.height *= 2f;
@@ -313,23 +333,24 @@ namespace ParkourFPS
 
         private bool OnSlope()
         {
-            if (groundCheck && Physics.Raycast(groundCheck.position, Vector3.down, out slopeHit, groundDistance))
-                return slopeHit.normal != Vector3.up;
-            return false;
+            return Physics.Raycast(groundCheck.position, Vector3.down, out slopeHit, groundDistance) &&
+                   slopeHit.normal != Vector3.up;
         }
 
         private void CheckGrounded()
         {
-            if (groundCheck != null)
-                isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
+            isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask);
         }
 
         private void CheckWallStatus()
         {
-            if (wallCheckRight != null)
-                touchingWallRight = Physics.CheckSphere(wallCheckRight.position, groundDistance * 2f, groundMask);
-            if (wallCheckLeft != null)
-                touchingWallLeft = Physics.CheckSphere(wallCheckLeft.position, groundDistance * 2f, groundMask);
+            touchingWallRight = Physics.CheckSphere(wallCheckRight.position, groundDistance * 2f, groundMask);
+            touchingWallLeft = Physics.CheckSphere(wallCheckLeft.position, groundDistance * 2f, groundMask);
+        }
+
+        private bool CanWallRun()
+        {
+            return wallrunningEnabled && (touchingWallRight || touchingWallLeft); // ✅ Opción 1: sin !isGrounded
         }
 
         private IEnumerator ControlStamina()
