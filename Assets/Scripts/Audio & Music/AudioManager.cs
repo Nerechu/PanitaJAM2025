@@ -81,9 +81,9 @@ public class AudioManager : MonoBehaviour
 
     public void PlayMusic(SoundType sound, float volume = 1)
     {
-        AudioClip[] clips = instance.soundList[(int)sound].Sounds;
+        //AudioClip[] clips = instance.soundList[(int)sound].Sounds;
         //AudioClip randomClip = clips[UnityEngine.Random.Range(0, clips.Length)];
-        instance.audioSource.PlayOneShot(clips[0], volume);
+        //instance.audioSource.PlayOneShot(clips[0], volume);
 
         //audioSource.PlayOneShot(sound);
     }
