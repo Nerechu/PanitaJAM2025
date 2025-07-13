@@ -9,9 +9,19 @@ public class SeedProjectile : MonoBehaviour
 
     private bool hasImpacted = false;
 
+    private void Awake()
+    {
+        // Activar interpolación para suavizar el movimiento en movimiento rápido
+        Rigidbody rb = GetComponent<Rigidbody>();
+        if (rb != null)
+        {
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
+    }
+
     private void Start()
     {
-        // Autodestruir después de 2 segundos si no impacta
+        // Destruir automáticamente si no impacta en 2 segundos
         Destroy(gameObject, 2f);
     }
 
@@ -22,26 +32,26 @@ public class SeedProjectile : MonoBehaviour
 
         ContactPoint contact = collision.contacts[0];
 
-        // Instanciar partículas de impacto
+        // Partículas de impacto
         if (impactParticlePrefab != null)
         {
             GameObject impact = Instantiate(impactParticlePrefab, contact.point, Quaternion.LookRotation(contact.normal));
             Destroy(impact, 2f);
         }
 
-        // Si impacta contra capa vegetal
+        // Si impacta con capa vegetal
         if (((1 << collision.gameObject.layer) & plantLayer) != 0)
         {
             ivySystem.createIvy(contact.point, contact.normal);
             ivySystem.combineAndClear();
 
-            //Audio
-
             AudioManager.instance.PlaySound(SoundType.SEEDPLANTED);
             AudioManager.instance.PlaySound(SoundType.PLANTGROWTH);
         }
-
-        else AudioManager.instance.PlaySound(SoundType.SEEDMISSED);
+        else
+        {
+            AudioManager.instance.PlaySound(SoundType.SEEDMISSED);
+        }
 
         Destroy(gameObject);
     }
