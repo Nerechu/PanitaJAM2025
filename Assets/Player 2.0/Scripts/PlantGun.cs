@@ -1,5 +1,5 @@
 ﻿using UnityEngine;
-using System.Collections; // ← Necesario para IEnumerator (corutinas)
+using System.Collections;
 
 public class PlantGun : MonoBehaviour
 {
@@ -43,21 +43,36 @@ public class PlantGun : MonoBehaviour
     {
         if (seedPrefab == null) return;
 
-        // Crear la semilla en la posición y dirección de la cámara
-        GameObject seed = Instantiate(seedPrefab, shotOrigin.position, Quaternion.LookRotation(fpsCamera.transform.forward));
+        // Raycast desde el centro del crosshair
+        Ray ray = fpsCamera.ViewportPointToRay(new Vector3(0.5f, 0.5f, 0));
+        Vector3 targetPoint;
 
-        //Audio
+        if (Physics.Raycast(ray, out RaycastHit hit, 100f))
+        {
+            targetPoint = hit.point;
+        }
+        else
+        {
+            targetPoint = ray.origin + ray.direction * 100f;
+        }
 
+        // Calcular dirección desde el arma hacia el punto objetivo
+        Vector3 shootDirection = (targetPoint - shotOrigin.position).normalized;
+
+        // Instanciar semilla y orientarla
+        GameObject seed = Instantiate(seedPrefab, shotOrigin.position, Quaternion.LookRotation(shootDirection));
+
+        // Sonido (sistema personalizado)
         AudioManager.instance.PlaySound(SoundType.FIRESEED);
 
-        // Obtener Rigidbody y aplicar fuerza
+        // Aplicar velocidad
         Rigidbody rb = seed.GetComponent<Rigidbody>();
         if (rb != null)
         {
-            rb.velocity = fpsCamera.transform.forward * launchForce;
+            rb.velocity = shootDirection * launchForce;
         }
 
-        // Asignar variables necesarias
+        // Asignar dependencias
         SeedProjectile seedScript = seed.GetComponent<SeedProjectile>();
         if (seedScript != null)
         {
@@ -66,7 +81,7 @@ public class PlantGun : MonoBehaviour
             seedScript.plantLayer = plantLayer;
         }
 
-        // Ignorar colisión con todos los colliders del jugador (arma + cuerpo)
+        // Ignorar colisiones con el jugador y el arma
         Collider seedCollider = seed.GetComponent<Collider>();
         Collider[] ownColliders = GetComponentsInParent<Collider>();
         if (seedCollider != null)
@@ -77,22 +92,22 @@ public class PlantGun : MonoBehaviour
             }
         }
 
-        // Reproducir animación de retroceso
+        // Recoil visual
         if (gunModel != null)
         {
             StopAllCoroutines();
             StartCoroutine(PlayRecoil());
         }
 
-        // Reproducir sonido de disparo
+        // Sonido con pitch aleatorio
         if (audioSource != null && shootClip != null)
         {
             audioSource.pitch = Random.Range(0.95f, 1.05f);
             audioSource.PlayOneShot(shootClip);
         }
 
-        // Debug opcional (visible en escena)
-        Debug.DrawRay(shotOrigin.position, fpsCamera.transform.forward * 10, Color.red, 2f);
+        // Debug visual en la escena
+        Debug.DrawRay(shotOrigin.position, shootDirection * 100f, Color.red, 2f);
     }
 
     private IEnumerator PlayRecoil()
