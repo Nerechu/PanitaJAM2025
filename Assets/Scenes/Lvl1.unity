@@ -8523,6 +8523,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 6343774473567281735, guid: 0c214e6784b1ad64bb39c1306f0cf55d, type: 3}
+      propertyPath: Loop
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6582436309216006657, guid: 0c214e6784b1ad64bb39c1306f0cf55d, type: 3}
       propertyPath: mainMenuMusic
       value: 
@@ -34140,7 +34144,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1258866898763248634, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: tutorialTimerSeconds
-      value: 13
+      value: 12
       objectReference: {fileID: 0}
     - target: {fileID: 1819834860469304168, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: m_Pivot.x
