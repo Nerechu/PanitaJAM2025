@@ -113,5 +113,9 @@ public class Climbing : MonoBehaviour
     private void Climb()
     {
         rb.velocity = new Vector3(0f, climbSpeed, 0f);
+        //Audio
+
+        if (!AudioManager.instance.audioSource.isPlaying)
+            AudioManager.instance.PlaySound(SoundType.CLIMB);
     }
 }
