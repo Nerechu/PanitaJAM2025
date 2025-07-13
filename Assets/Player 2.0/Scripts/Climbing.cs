@@ -1,4 +1,3 @@
-// === Optimized Climbing.cs ===
 using UnityEngine;
 
 [RequireComponent(typeof(PlayerMovement))]
@@ -6,13 +5,14 @@ using UnityEngine;
 public class Climbing : MonoBehaviour
 {
     [Header("Wall Detection")]
-    public LayerMask whatIsWall;
+    [Tooltip("Layer that represents climbable surfaces")]
+    public LayerMask whatIsWall; // En el inspector, selecciona solo "Climb"
     public float detectionLength = 1f;
     public float sphereCastRadius = 0.5f;
     public float maxWallLookAngle = 45f;
 
     [Header("Climb Settings")]
-    public float climbSpeed = 5f;
+    public float climbSpeed = 3f;
     public float maxClimbTime = 3f;
 
     [Header("Camera")]
@@ -32,8 +32,10 @@ public class Climbing : MonoBehaviour
         pm = GetComponent<PlayerMovement>();
         rb = GetComponent<Rigidbody>();
 
-        if (playerCam == null)
-            playerCam = Camera.main?.transform;
+        if (playerCam == null && Camera.main != null)
+            playerCam = Camera.main.transform;
+
+        climbTimer = maxClimbTime;
     }
 
     private void Update()
@@ -47,21 +49,27 @@ public class Climbing : MonoBehaviour
 
     private void WallCheck()
     {
+        Vector3 origin = transform.position + Vector3.up * 1.2f; // Altura del pecho
+
         wallFront = Physics.SphereCast(
-            transform.position,
+            origin,
             sphereCastRadius,
             transform.forward,
             out frontWallHit,
             detectionLength,
-            whatIsWall
+            whatIsWall // Usamos Layer "Climb"
         );
 
         if (wallFront)
+        {
             wallLookAngle = Vector3.Angle(transform.forward, -frontWallHit.normal);
+        }
         else
+        {
             wallLookAngle = 999f;
+        }
 
-        if (pm.grounded)
+        if (pm.grounded && !climbing)
             climbTimer = maxClimbTime;
     }
 
@@ -70,14 +78,13 @@ public class Climbing : MonoBehaviour
         bool isLookingAtWall = wallLookAngle < maxWallLookAngle;
         bool isTryingToClimb = wallFront && Input.GetKey(KeyCode.W) && isLookingAtWall;
 
-        if (isTryingToClimb)
+        if (isTryingToClimb && climbTimer > 0f)
         {
-            if (!climbing && climbTimer > 0f)
+            if (!climbing)
                 StartClimb();
 
-            if (climbTimer > 0f)
-                climbTimer -= Time.deltaTime;
-            else
+            climbTimer -= Time.deltaTime;
+            if (climbTimer <= 0f)
                 StopClimb();
         }
         else if (climbing)
@@ -90,16 +97,21 @@ public class Climbing : MonoBehaviour
     {
         climbing = true;
         pm.climbing = true;
+
+        rb.useGravity = false;
+        rb.velocity = Vector3.zero;
     }
 
     private void StopClimb()
     {
         climbing = false;
         pm.climbing = false;
+
+        rb.useGravity = true;
     }
 
     private void Climb()
     {
-        rb.velocity = new Vector3(rb.velocity.x, climbSpeed, rb.velocity.z);
+        rb.velocity = new Vector3(0f, climbSpeed, 0f);
     }
 }
