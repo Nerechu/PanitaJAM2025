@@ -6,8 +6,8 @@ using UnityEngine.SceneManagement;
 public class Manager : MonoBehaviour
 {
     public int time;
-    int totalPlants = 0;
-    int currentPlants = 0;
+    public int totalPlants = 0;
+    public int currentPlants = 0;
     public static Manager instance;
     [SerializeField] GameObject winCanvas; // Reference to the Game Win panel
     [SerializeField] GameObject loseCanvas; // Reference to the Game Lose panel
