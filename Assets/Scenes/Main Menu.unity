@@ -2598,22 +2598,8 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'Artists
-
-
-
-
-
-    Programmers
-
-
-
-
-
-    Sound & Music
-
-
-'
+  m_text: "Artists\nCristina Diez\n\nProgrammers\t\nDaniel M\xE9ndez\nSalvador Moya\nNerea
+    Alonso\n\nSound & Music\nLucas Bittini"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: cd85bf62f799fab40aaf80f686683fe0, type: 2}
   m_sharedMaterial: {fileID: -8077986137633999394, guid: cd85bf62f799fab40aaf80f686683fe0, type: 2}
