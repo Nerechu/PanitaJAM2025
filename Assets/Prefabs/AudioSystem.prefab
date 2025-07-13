@@ -10,6 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2782238473020022761}
   - component: {fileID: 3226418540213414086}
+  - component: {fileID: 8024864186410754363}
   m_Layer: 0
   m_Name: MusicSource
   m_TagString: Untagged
@@ -44,9 +45,9 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 24300002, guid: 93a05f77e2cf36448ad1b81832ef7377, type: 2}
   m_audioClip: {fileID: 0}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.762
   m_Pitch: 1
-  Loop: 0
+  Loop: 1
   Mute: 0
   Spatialize: 0
   SpatializePostEffects: 0
@@ -128,6 +129,20 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &8024864186410754363
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3071394068083894495}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0a5e85d444f4b8840bea168791e2bdab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  audioSource: {fileID: 3226418540213414086}
+  mainMenuMusic: {fileID: 8300000, guid: 99b34c5225486964db2432b0e0876de3, type: 3}
 --- !u!1 &5820429747954582803
 GameObject:
   m_ObjectHideFlags: 0
@@ -271,10 +286,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   audioSource: {fileID: 1824192805532962837}
-  musicSource: {fileID: 0}
+  musicSource: {fileID: 3226418540213414086}
   soundList:
   - name: MUSIC
-    sounds: []
+    sounds:
+    - {fileID: 8300000, guid: 99b34c5225486964db2432b0e0876de3, type: 3}
   - name: WALK
     sounds:
     - {fileID: 8300000, guid: 762714f893d23cb44b2e6a35efcbe36e, type: 3}
