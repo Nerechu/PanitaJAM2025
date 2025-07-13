@@ -50,9 +50,10 @@ public class Manager : MonoBehaviour
         winCanvas.SetActive(true); // Show the win panel
         levelCanvas.SetActive(false); // Hide the level panel
         Time.timeScale = 0f;
-        time = Mathf.FloorToInt(TimerSystem.instance.remainingTime);
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
+        time = 300 - Mathf.FloorToInt(TimerSystem.instance.remainingTime);
         displayTime.UpdateTime(time);
-        time = 300 - time;
         if (time < thirdStar)
         {
             displayTime.UpdateStars(3); // 3 stars awarded
