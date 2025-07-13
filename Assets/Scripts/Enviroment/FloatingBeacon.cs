@@ -7,6 +7,11 @@ public class FloatingBeacon : MonoBehaviour
     public float floatAmplitude = 1f;
     public float floatFrequency = 1f;
 
+    [Header("Descenso por gancho")]
+    public float descendOffset = 0.3f;
+    public float descendSpeed = 2f;
+    public float ascendSpeed = 1.5f;
+
     [Header("Hélice")]
     public Transform helice;
     public float heliceSpeed = 360f;
@@ -17,15 +22,16 @@ public class FloatingBeacon : MonoBehaviour
     [Tooltip("Nombre del parámetro expuesto en el Audio Mixer")]
     public string mixerVolumeParam = "BeaconVolume";
 
-    [Header("Gancho")]
     private bool isGrappled = false;
-    private Vector3 startPosition;
+    private bool isReturning = false;
+
+    private Vector3 basePosition;
+    private Vector3 grappledPosition;
 
     void Start()
     {
-        startPosition = transform.position;
+        basePosition = transform.position;
 
-        // Asegura que el AudioSource está bien configurado
         if (heliceAudioSource != null)
         {
             heliceAudioSource.loop = true;
@@ -36,54 +42,64 @@ public class FloatingBeacon : MonoBehaviour
 
     void Update()
     {
-        if (!isGrappled)
+        // Movimiento vertical normal si no está enganchado ni regresando
+        if (!isGrappled && !isReturning)
         {
-            // Movimiento vertical senoidal
             float newY = Mathf.Sin(Time.time * floatFrequency) * floatAmplitude;
-            transform.position = startPosition + new Vector3(0, newY, 0);
-
-            // Rotación de la hélice
-            if (helice != null)
-                helice.Rotate(Vector3.up * heliceSpeed * Time.deltaTime);
-
-            // Reanudar sonido si está pausado
-            if (heliceAudioSource != null && !heliceAudioSource.isPlaying)
-                heliceAudioSource.Play();
+            transform.position = basePosition + new Vector3(0, newY, 0);
         }
-        else
+
+        // Hélice gira siempre
+        if (helice != null)
+            helice.Rotate(Vector3.up * heliceSpeed * Time.deltaTime);
+
+        // Transición hacia abajo al engancharse
+        if (isGrappled)
         {
-            // Pausar sonido al enganchar
-            if (heliceAudioSource != null && heliceAudioSource.isPlaying)
-                heliceAudioSource.Pause();
+            transform.position = Vector3.Lerp(transform.position, grappledPosition, Time.deltaTime * descendSpeed);
         }
+
+        // Subida suave cuando se desengancha
+        if (isReturning)
+        {
+            transform.position = Vector3.Lerp(transform.position, basePosition, Time.deltaTime * ascendSpeed);
+
+            // Cuando está suficientemente cerca de basePosition, terminamos el retorno
+            if (Vector3.Distance(transform.position, basePosition) < 0.01f)
+            {
+                transform.position = basePosition;
+                isReturning = false;
+            }
+        }
+
+        // Asegura que el audio sigue sonando
+        if (heliceAudioSource != null && !heliceAudioSource.isPlaying)
+            heliceAudioSource.Play();
     }
 
-    // Llama esto desde el gancho cuando se enganche
+    // Llama esto desde el gancho al engancharse
     public void OnGrappled()
     {
         isGrappled = true;
-        startPosition = transform.position;
+        isReturning = false;
 
-        // También podrías reducir volumen del mixer si prefieres en lugar de pausar
-        // audioMixer.SetFloat(mixerVolumeParam, -80f); // Silencio total
+        // Guarda posición actual como base (por si el beacon se movió)
+        basePosition = transform.position;
+
+        // Calcula posición descendida
+        grappledPosition = basePosition + Vector3.down * descendOffset;
     }
 
-    // Opcional: permite volver a activar el beacon
+    // Llama esto desde el gancho al soltarse
     public void ResetBeacon()
     {
         isGrappled = false;
-        startPosition = transform.position;
-
-        if (heliceAudioSource != null && !heliceAudioSource.isPlaying)
-            heliceAudioSource.Play();
-
-        // audioMixer.SetFloat(mixerVolumeParam, 0f); // Restaurar volumen si usaste SetFloat
+        isReturning = true;
     }
 
-    // Opcional: cambiar volumen desde otro script
+    // Para cambiar el volumen desde otro script (opcional)
     public void SetVolume(float normalizedVolume)
     {
-        // normalizedVolume: entre 0.0001 y 1
         if (audioMixer != null)
             audioMixer.SetFloat(mixerVolumeParam, Mathf.Log10(Mathf.Clamp(normalizedVolume, 0.0001f, 1f)) * 20f);
     }
