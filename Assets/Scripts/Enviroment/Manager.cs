@@ -50,8 +50,10 @@ public class Manager : MonoBehaviour
         winCanvas.SetActive(true); // Show the win panel
         levelCanvas.SetActive(false); // Hide the level panel
         Time.timeScale = 0f;
-        Cursor.lockState = CursorLockMode.Locked;
-        Cursor.visible = false;
+        player.GetComponent<ParkourFPS.PlayerControllerScript>().enabled = false; // Disable player controls
+        player.GetComponent<PlantGun>().enabled = false; // Disable player controls
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         time = 300 - Mathf.FloorToInt(TimerSystem.instance.remainingTime);
         displayTime.UpdateTime(time);
         if (time < thirdStar)
