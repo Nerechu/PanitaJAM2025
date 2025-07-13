@@ -12,6 +12,7 @@ public class Manager : MonoBehaviour
     [SerializeField] GameObject winCanvas; // Reference to the Game Win panel
     [SerializeField] GameObject loseCanvas; // Reference to the Game Lose panel
     [SerializeField] GameObject levelCanvas; // Reference to the Game level panel
+    [SerializeField] GameObject player; // Reference to the player GameObject
     [SerializeField] DisplaySlider displaySlider; // Reference to the DisplaySlider script
     [SerializeField] DisplayTime displayTime; // Reference to the DisplaySlider script
     [SerializeField] int firstStar = 200; // Time in seconds to achieve the first star
@@ -75,5 +76,9 @@ public class Manager : MonoBehaviour
         loseCanvas.SetActive(true); // Show the lose panel
         levelCanvas.SetActive(false); // Hide the level panel
         Time.timeScale = 0f;
+        player.GetComponent<ParkourFPS.PlayerControllerScript>().enabled = false; // Disable player controls
+        player.GetComponent<PlantGun>().enabled = false; // Disable player controls
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
     }
 }
