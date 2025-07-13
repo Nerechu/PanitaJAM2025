@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using System.Collections;
 
 [RequireComponent(typeof(PlayerMovement))]
 public class Swinging : MonoBehaviour
@@ -20,11 +21,17 @@ public class Swinging : MonoBehaviour
 
     [Header("Visual")]
     public LineRenderer lineRenderer;
+    public GameObject hitParticlesValid;
+    public GameObject hitParticlesInvalid;
+    public GameObject missParticles;
+    public int ropeSegments = 20;
+    public float ropeAnimationSpeed = 5f;
 
     private Vector3 grapplePoint;
     private bool isGrappling;
     private bool isFlying;
     private float cooldownTimer;
+    private Coroutine ropeAnimationCoroutine;
 
     private PlayerMovement pm;
 
@@ -56,30 +63,51 @@ public class Swinging : MonoBehaviour
     }
 
     private void TryStartGrapple()
-    {            
-        //Audio disparo de gancho
+    {
+        cooldownTimer = grappleCooldown;
 
         AudioManager.instance.PlaySound(SoundType.FIREHOOK);
-        
+
         RaycastHit hit;
-        if (Physics.Raycast(cam.position, cam.forward, out hit, maxDistance, grappleMask))
+        if (Physics.Raycast(cam.position, cam.forward, out hit, maxDistance))
         {
             grapplePoint = hit.point;
-            isFlying = true;
-            isGrappling = true;
-            cooldownTimer = grappleCooldown;
+            bool validLayer = ((1 << hit.collider.gameObject.layer) & grappleMask) != 0;
 
-            //Audio de acierto
+            if (validLayer)
+            {
+                if (hitParticlesValid)
+                    Instantiate(hitParticlesValid, hit.point, Quaternion.identity);
 
-            AudioManager.instance.PlayDelayedSound(SoundType.HOOKLANDED, 1, 0.5f);
+                AudioManager.instance.PlayDelayedSound(SoundType.HOOKLANDED, 1, 0.5f);
 
-            pm.swinging = true; // si querés bloquear input en el aire
-            SetupLine();
+                isFlying = true;
+                isGrappling = true;
+                pm.swinging = true;
+
+                StartRopeAnimation(gunTip.position, grapplePoint, false);
+            }
+            else
+            {
+                if (hitParticlesInvalid)
+                    Instantiate(hitParticlesInvalid, hit.point, Quaternion.identity);
+
+                AudioManager.instance.PlayDelayedSound(SoundType.HOOKMISSED, 1, 0.75f);
+
+                StartRopeAnimation(gunTip.position, hit.point, true);
+            }
         }
+        else
+        {
+            Vector3 endPoint = cam.position + cam.forward * maxDistance;
 
-        //Audio de fallo con volumen default 1 y 0,75 sec de delay
+            if (missParticles)
+                Instantiate(missParticles, endPoint, Quaternion.identity);
 
-        else AudioManager.instance.PlayDelayedSound(SoundType.HOOKMISSED, 1, 0.75f);
+            AudioManager.instance.PlayDelayedSound(SoundType.HOOKMISSED, 1, 0.75f);
+
+            StartRopeAnimation(gunTip.position, endPoint, true);
+        }
     }
 
     private void EndGrapple()
@@ -88,39 +116,70 @@ public class Swinging : MonoBehaviour
         isGrappling = false;
         pm.swinging = false;
 
+        StartRopeAnimation(grapplePoint, gunTip.position, true);
+
+        Vector3 launchDir = (grapplePoint - transform.position).normalized + Vector3.up * 0.5f;
+        rb.velocity = launchDir * boostSpeed;
+
+        AudioManager.instance.PlaySound(SoundType.HOOKRELEASE);
+    }
+
+    private void StartRopeAnimation(Vector3 start, Vector3 end, bool returnAfter)
+    {
+        if (ropeAnimationCoroutine != null)
+            StopCoroutine(ropeAnimationCoroutine);
+
+        ropeAnimationCoroutine = StartCoroutine(AnimateCurvedRope(start, end, returnAfter));
+    }
+
+    private IEnumerator AnimateCurvedRope(Vector3 start, Vector3 end, bool returnAfter)
+    {
+        float t = 0f;
+        lineRenderer.enabled = true;
+        lineRenderer.positionCount = ropeSegments + 1;
+
+        while (t < 1f)
+        {
+            t += Time.deltaTime * ropeAnimationSpeed;
+            DrawCurvedRope(start, end, Mathf.Clamp01(t));
+            yield return null;
+        }
+
+        DrawCurvedRope(start, end, 1f);
+
+        if (returnAfter)
+        {
+            yield return new WaitForSeconds(0.2f);
+            ResetLine();
+        }
+    }
+
+    private void DrawCurvedRope(Vector3 start, Vector3 end, float progress)
+    {
+        for (int i = 0; i <= ropeSegments; i++)
+        {
+            float t = i / (float)ropeSegments;
+            Vector3 point = Vector3.Lerp(start, end, t);
+
+            // Simula curvatura vertical en el medio
+            float curve = Mathf.Sin(t * Mathf.PI) * 2f; // altura del arco
+            Vector3 upOffset = Vector3.up * curve * (1 - progress); // más recto a medida que progresa
+
+            lineRenderer.SetPosition(i, point + upOffset);
+        }
+    }
+
+    private void UpdateRope()
+    {
+        DrawCurvedRope(gunTip.position, grapplePoint, 1f);
+    }
+
+    private void ResetLine()
+    {
         if (lineRenderer)
         {
             lineRenderer.positionCount = 0;
             lineRenderer.enabled = false;
         }
-
-        // Impulso extra al soltarse
-        Vector3 launchDir = (grapplePoint - transform.position).normalized + Vector3.up * 0.5f;
-        rb.velocity = launchDir * boostSpeed;
-
-        //Audio release de gancho
-
-        AudioManager.instance.PlaySound(SoundType.HOOKRELEASE);
-    }
-
-    private void SetupLine()
-    {
-        if (lineRenderer == null)
-        {
-            GameObject obj = new GameObject("GrappleLine");
-            lineRenderer = obj.AddComponent<LineRenderer>();
-            lineRenderer.material = new Material(Shader.Find("Sprites/Default"));
-            lineRenderer.widthMultiplier = 0.05f;
-        }
-
-        lineRenderer.positionCount = 2;
-        lineRenderer.enabled = true;
-    }
-
-    private void UpdateRope()
-    {
-        if (!lineRenderer || !gunTip) return;
-        lineRenderer.SetPosition(0, gunTip.position);
-        lineRenderer.SetPosition(1, grapplePoint);
     }
 }
