@@ -16306,11 +16306,19 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 1051977517}
     - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
+      propertyPath: m_RenderMode
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_SortingOrder
-      value: 1
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_PlaneDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
+      propertyPath: m_UpdateRectTransformForStandalone
       value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
@@ -23130,7 +23138,7 @@ Canvas:
   m_GameObject: {fileID: 1273129698}
   m_Enabled: 1
   serializedVersion: 3
-  m_RenderMode: 1
+  m_RenderMode: 0
   m_Camera: {fileID: 1051977517}
   m_PlaneDistance: 100
   m_PixelPerfect: 0
@@ -23140,7 +23148,7 @@ Canvas:
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
   m_AdditionalShaderChannelsFlag: 25
-  m_UpdateRectTransformForStandalone: 0
+  m_UpdateRectTransformForStandalone: 1
   m_SortingLayerID: 0
   m_SortingOrder: 0
   m_TargetDisplay: 0
@@ -27267,7 +27275,7 @@ Canvas:
   m_RenderMode: 0
   m_Camera: {fileID: 0}
   m_PlaneDistance: 100
-  m_PixelPerfect: 0
+  m_PixelPerfect: 1
   m_ReceivesEvents: 1
   m_OverrideSorting: 0
   m_OverridePixelPerfect: 0
@@ -27276,7 +27284,7 @@ Canvas:
   m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
-  m_SortingOrder: 0
+  m_SortingOrder: 2
   m_TargetDisplay: 0
 --- !u!4 &1318176350 stripped
 Transform:
@@ -34126,9 +34134,13 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 272858499262441138, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
+      propertyPath: m_SortingOrder
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 1258866898763248634, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: tutorialTimerSeconds
-      value: 18
+      value: 13
       objectReference: {fileID: 0}
     - target: {fileID: 1819834860469304168, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: m_Pivot.x
@@ -45811,6 +45823,8 @@ SceneRoots:
   - {fileID: 1273129702}
   - {fileID: 679068246}
   - {fileID: 1673460179}
+  - {fileID: 1839599145}
+  - {fileID: 1311430145}
   - {fileID: 986211692}
   - {fileID: 1072708019}
   - {fileID: 1383758432}
@@ -45897,11 +45911,9 @@ SceneRoots:
   - {fileID: 1994386749}
   - {fileID: 724060606}
   - {fileID: 964910502}
-  - {fileID: 1311430145}
   - {fileID: 1757148169}
   - {fileID: 1653446918}
   - {fileID: 1958815232}
   - {fileID: 747951379}
   - {fileID: 952484853}
-  - {fileID: 1839599145}
   - {fileID: 839122155}

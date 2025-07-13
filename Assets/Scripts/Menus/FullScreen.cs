@@ -16,6 +16,11 @@ public class FullScreen : MonoBehaviour
     Resolution[] resoluciones;
     //
 
+    private void Awake()
+    {
+        //Screen.SetResolution(1920, 1080, Screen.fullScreen);
+    }
+
     void Start()
     {
         if (Screen.fullScreen)
@@ -72,14 +77,16 @@ public class FullScreen : MonoBehaviour
 
 
         //
-        resolucionesDropDown.value = PlayerPrefs.GetInt("numeroResolucion", 0);
+        //resolucionesDropDown.value = PlayerPrefs.GetInt("numeroResolucion", 9);
         //
+
+        CambiarResolucion(resoluciones.Length - 1);
     }
 
     public void CambiarResolucion(int indiceResolucion)
     {
         //
-        PlayerPrefs.SetInt("numeroResolucion", resolucionesDropDown.value);
+        PlayerPrefs.SetInt("numeroResolucion", resoluciones.Length-1);
         //
 
 
