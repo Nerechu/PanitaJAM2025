@@ -12,6 +12,7 @@ public class Pause : MonoBehaviour
 
     public GameObject HUD;
     public AudioSource music;
+    public GameObject player;
     
     public Slider volumeMusicSlider;
     public Slider volumeFXSlider;
@@ -48,6 +49,10 @@ public class Pause : MonoBehaviour
         this.gameObject.transform.GetChild(0).gameObject.SetActive(true);
         currentState = stateGame.STOP;
         Time.timeScale = 0;
+        player.GetComponent<ParkourFPS.PlayerControllerScript>().enabled = false; // Disable player controls
+        player.GetComponent<PlantGun>().enabled = false; // Disable player controls
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         HUD.SetActive(false);
         if (music != null)
         {
@@ -61,6 +66,10 @@ public class Pause : MonoBehaviour
 
         currentState = stateGame.CONTINUE;
         Time.timeScale = 1;
+        player.GetComponent<ParkourFPS.PlayerControllerScript>().enabled = true; // Disable player controls
+        player.GetComponent<PlantGun>().enabled = true; // Disable player controls
+        Cursor.lockState = CursorLockMode.Locked;
+        Cursor.visible = false;
         HUD.SetActive(true);
         if (music != null)
         {
