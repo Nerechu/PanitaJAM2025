@@ -14,12 +14,12 @@ OcclusionCullingSettings:
 RenderSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 9
-  m_Fog: 0
-  m_FogColor: {r: 0.5, g: 0.5, b: 0.5, a: 1}
-  m_FogMode: 3
+  m_Fog: 1
+  m_FogColor: {r: 0.50980395, g: 0.909804, b: 0.8862746, a: 1}
+  m_FogMode: 1
   m_FogDensity: 0.01
   m_LinearFogStart: 0
-  m_LinearFogEnd: 300
+  m_LinearFogEnd: 2000
   m_AmbientSkyColor: {r: 0.212, g: 0.227, b: 0.259, a: 1}
   m_AmbientEquatorColor: {r: 0.114, g: 0.125, b: 0.133, a: 1}
   m_AmbientGroundColor: {r: 0.047, g: 0.043, b: 0.035, a: 1}
@@ -16656,7 +16656,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3708378516572076989, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -17507,7 +17507,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!23 &1072708017
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -17567,7 +17567,7 @@ Transform:
   m_GameObject: {fileID: 1072708016}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -476, z: 143}
+  m_LocalPosition: {x: 0, y: -6, z: 143}
   m_LocalScale: {x: 6024.2, y: 4.446889, z: 7931.7715}
   m_ConstrainProportionsScale: 1
   m_Children: []
@@ -31267,6 +31267,10 @@ PrefabInstance:
     - target: {fileID: 3031420703652330772, guid: 03c9b2bb38378da409a849b8604ff09f, type: 3}
       propertyPath: maxDashYSpeed
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3313334185285008342, guid: 03c9b2bb38378da409a849b8604ff09f, type: 3}
+      propertyPath: far clip plane
+      value: 4000
       objectReference: {fileID: 0}
     - target: {fileID: 4265995592963336490, guid: 03c9b2bb38378da409a849b8604ff09f, type: 3}
       propertyPath: damper
