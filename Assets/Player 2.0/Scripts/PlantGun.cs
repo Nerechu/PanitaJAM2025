@@ -46,6 +46,10 @@ public class PlantGun : MonoBehaviour
         // Crear la semilla en la posición y dirección de la cámara
         GameObject seed = Instantiate(seedPrefab, shotOrigin.position, Quaternion.LookRotation(fpsCamera.transform.forward));
 
+        //Audio
+
+        AudioManager.instance.PlaySound(SoundType.FIRESEED);
+
         // Obtener Rigidbody y aplicar fuerza
         Rigidbody rb = seed.GetComponent<Rigidbody>();
         if (rb != null)
