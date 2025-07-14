@@ -20,17 +20,17 @@ public class DisplayHighscores : MonoBehaviour
     }
     public void SetScoresToMenu(PlayerScore[] highscoreList) //Assigns proper name and score for each text value
     {
-        for (int i = 0; i < rNames.Length;i ++)
+        for (int i =  0; i < rNames.Length; i ++)
         {
-            rNames[i].text = i + 1 + ". ";
+            rNames[i].text = i - 1 + ". ";
             if (highscoreList.Length > i)
             {
                 //AQUI CAMBIAR PARA CALCULAR EL TIEMPO
-                int remainingTime = 300 - highscoreList[i].score; //Assuming score is in seconds, 300 seconds = 5 minutes
+                int remainingTime = highscoreList[highscoreList.Length - i - 1].score; //Assuming score is in seconds, 300 seconds = 5 minutes
                 int minutes = Mathf.FloorToInt(remainingTime / 60);
                 int seconds = Mathf.FloorToInt(remainingTime % 60);
                 rScores[i].text = string.Format("{0:00}:{1:00}", minutes, seconds);
-                string name = (i + 1) + ". " + highscoreList[i].username;
+                string name = (i + 1) + ". " + highscoreList[highscoreList.Length -i -1].username;
                 rNames[i].text = name;
             }
         }

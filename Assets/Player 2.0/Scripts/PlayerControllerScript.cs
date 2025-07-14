@@ -25,7 +25,7 @@ namespace ParkourFPS
         [SerializeField] private float fieldOfView = 80;
         [SerializeField] private float lookSensitivity = 2;
         private float currRotationX = 0;
-        private const float lookXLimit = 45;
+        private const float lookXLimit = 90;
         #endregion
 
         #region Movement Speeds

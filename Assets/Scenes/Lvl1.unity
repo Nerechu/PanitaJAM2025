@@ -5147,7 +5147,7 @@ PrefabInstance:
     - target: {fileID: 1105774612963029527, guid: 2da6d14cf8d884545af517d06b99b9d4, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 221687776}
     - target: {fileID: 1774803563680816710, guid: 2da6d14cf8d884545af517d06b99b9d4, type: 3}
       propertyPath: m_Name
       value: Canvas Win
@@ -16297,6 +16297,10 @@ PrefabInstance:
       propertyPath: objectsWithComponentsToDisable.Array.data[1]
       value: 
       objectReference: {fileID: 221687776}
+    - target: {fileID: 1911122629836155042, guid: ac7558de53410ee4e925eed311033377, type: 3}
+      propertyPath: m_SortingOrder
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 3708378516572076989, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_Name
       value: Cutscene
@@ -16314,11 +16318,19 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
+      propertyPath: m_PixelPerfect
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_SortingOrder
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
       propertyPath: m_PlaneDistance
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
+      propertyPath: m_VertexColorAlwaysGammaSpace
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8008692968730768280, guid: ac7558de53410ee4e925eed311033377, type: 3}
@@ -16588,7 +16600,7 @@ PrefabInstance:
     - target: {fileID: 3307357069006014268, guid: 35e2ee56cf0537947862a2b4bd5cdd6c, type: 3}
       propertyPath: player
       value: 
-      objectReference: {fileID: 0}
+      objectReference: {fileID: 221687776}
     - target: {fileID: 4439823189326726874, guid: 35e2ee56cf0537947862a2b4bd5cdd6c, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
@@ -30443,6 +30455,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: advertising_005
       objectReference: {fileID: 0}
+    - target: {fileID: 241345318934554058, guid: cc6bec0d54d7c7a4e9dc4993a5d9bae2, type: 3}
+      propertyPath: m_Layer
+      value: 6
+      objectReference: {fileID: 0}
     - target: {fileID: 581737194419158896, guid: cc6bec0d54d7c7a4e9dc4993a5d9bae2, type: 3}
       propertyPath: m_LocalScale.x
       value: 32.95186
@@ -30999,7 +31015,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3031420703652330772, guid: 03c9b2bb38378da409a849b8604ff09f, type: 3}
       propertyPath: dashCooldown
-      value: 1
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 3031420703652330772, guid: 03c9b2bb38378da409a849b8604ff09f, type: 3}
       propertyPath: maxDashYSpeed
@@ -34140,11 +34156,11 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 272858499262441138, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: m_SortingOrder
-      value: 5
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1258866898763248634, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: tutorialTimerSeconds
-      value: 12
+      value: 18
       objectReference: {fileID: 0}
     - target: {fileID: 1819834860469304168, guid: 9dae9cead5472624081cfd0caee4ce39, type: 3}
       propertyPath: m_Pivot.x

@@ -22,7 +22,7 @@ public class SeedProjectile : MonoBehaviour
     private void Start()
     {
         // Destruir automáticamente si no impacta en 2 segundos
-        Destroy(gameObject, 2f);
+        Destroy(gameObject, 4f);
     }
 
     private void OnCollisionEnter(Collision collision)
